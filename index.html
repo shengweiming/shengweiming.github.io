@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>My Site with Tabs</title>
+<style>
+  :root { --bg:#0f172a; --fg:#e2e8f0; --muted:#94a3b8; --card:#111827; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif; background:var(--bg); color:var(--fg); }
+  header { padding:2rem 1rem; text-align:center; }
+  header h1 { margin:0 0 .25rem; font-weight:700; letter-spacing:.3px; }
+  header p { margin:0; color:var(--muted); }
+  .tabs { display:flex; justify-content:center; gap:.5rem; padding:0 1rem; margin:1rem auto; flex-wrap:wrap; }
+  .tab-btn {
+    border:1px solid #1f2937; background:#0b1220; color:var(--fg);
+    padding:.6rem .9rem; border-radius:.6rem; cursor:pointer; font-weight:600;
+  }
+  .tab-btn[aria-selected="true"] { outline:2px solid #2563eb; outline-offset:2px; }
+  main { max-width:900px; margin:0 auto; padding:1rem; }
+  .panel { display:none; background:var(--card); border:1px solid #1f2937; border-radius:1rem; padding:1rem; }
+  .panel.active { display:block; animation:fade .15s ease-out; }
+  .cards { display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card { padding:1rem; border-radius:.8rem; background:#0b1220; border:1px solid #1f2937; }
+  footer { text-align:center; color:var(--muted); padding:2rem 1rem; }
+  a { color:#60a5fa; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  @keyframes fade { from { opacity:.6; transform:translateY(2px)} to { opacity:1; transform:none } }
+</style>
+</head>
+<body>
+  <header>
+    <h1>[Your Name]</h1>
+    <p>Philosophy • Stats/ML • Writing</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Site sections">
+    <button class="tab-btn" role="tab" aria-selected="true" aria-controls="about" id="tab-about">About</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="projects" id="tab-projects">Projects</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="writing" id="tab-writing">Writing</button>
+    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="contact" id="tab-contact">Contact</button>
+  </nav>
+
+  <main>
+    <section id="about" class="panel active" role="tabpanel" aria-labelledby="tab-about">
+      <h2>About</h2>
+      <p>Hi! I’m [Your Name]. I work at the intersection of philosophy and statistics/ML.
+         This site collects notes, projects, and writing.</p>
+    </section>
+
+    <section id="projects" class="panel" role="tabpanel" aria-labelledby="tab-projects">
+      <h2>Projects</h2>
+      <div class="cards">
+        <div class="card"><h3>Project A</h3><p>Short description with a <a href="#">link</a>.</p></div>
+        <div class="card"><h3>Project B</h3><p>Another thing you built.</p></div>
+        <div class="card"><h3>Project C</h3><p>Notes, datasets, or papers.</p></div>
+      </div>
+    </section>
+
+    <section id="writing" class="panel" role="tabpanel" aria-labelledby="tab-writing">
+      <h2>Writing</h2>
+      <ul>
+        <li><a href="#">Essay: Think Before You Speak</a></li>
+        <li><a href="#">Notes on Statistical Learning Theory</a></li>
+        <li><a href="#">Reading journal: Middlemarch</a></li>
+      </ul>
+    </section>
+
+    <section id="contact" class="panel" role="tabpanel" aria-labelledby="tab-contact">
+      <h2>Contact</h2>
+      <p>Email: <a href="mailto:your.email@example.com">your.email@example.com</a></p>
+      <p>GitHub: <a href="https://github.com/yourusername" target="_blank">yourusername</a></p>
+      <p>Twitter: <a href="https://twitter.com/yourhandle" target="_blank">@yourhandle</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <small>© 2025 [Your Name]. Built with vanilla HTML/CSS/JS.</small>
+  </footer>
+
+  <script>
+    // Accessible tab switching (no framework needed)
+    const tabs = document.querySelectorAll('[role="tab"]');
+    const panels = document.querySelectorAll('[role="tabpanel"]');
+
+    function activateTab(tab) {
+      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+      panels.forEach(p => p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')));
+      tab.focus();
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', (e) => {
+        const i = Array.from(tabs).indexOf(tab);
+        if (e.key === 'ArrowRight') activateTab(tabs[(i+1) % tabs.length]);
+        if (e.key === 'ArrowLeft') activateTab(tabs[(i-1+tabs.length) % tabs.length]);
+      });
+    });
+  </script>
+</body>
+</html>
