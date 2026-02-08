@@ -3,107 +3,177 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>My Site with Tabs</title>
+<title>Weiming Sheng | Philosophy, Statistics, and ML</title>
+<meta name="description" content="Personal academic website of Weiming Sheng with information about research, publications, and contact details." />
 <style>
-  :root { --bg:#0f172a; --fg:#e2e8f0; --muted:#94a3b8; --card:#111827; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif; background:var(--bg); color:var(--fg); }
-  header { padding:2rem 1rem; text-align:center; }
-  header h1 { margin:0 0 .25rem; font-weight:700; letter-spacing:.3px; }
-  header p { margin:0; color:var(--muted); }
-  .tabs { display:flex; justify-content:center; gap:.5rem; padding:0 1rem; margin:1rem auto; flex-wrap:wrap; }
-  .tab-btn {
-    border:1px solid #1f2937; background:#0b1220; color:var(--fg);
-    padding:.6rem .9rem; border-radius:.6rem; cursor:pointer; font-weight:600;
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap');
+
+  :root {
+    --bg: #0b1f4d; /* deep academic blue */
+    --text: #0f172a;
+    --muted: #264653;
+    --card: rgba(255, 255, 255, 0.78);
+    --card-border: rgba(15, 23, 42, 0.15);
+    --link: #0b3b6e;
   }
-  .tab-btn[aria-selected="true"] { outline:2px solid #2563eb; outline-offset:2px; }
-  main { max-width:900px; margin:0 auto; padding:1rem; }
-  .panel { display:none; background:var(--card); border:1px solid #1f2937; border-radius:1rem; padding:1rem; }
-  .panel.active { display:block; animation:fade .15s ease-out; }
-  .cards { display:grid; gap:1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-  .card { padding:1rem; border-radius:.8rem; background:#0b1220; border:1px solid #1f2937; }
-  footer { text-align:center; color:var(--muted); padding:2rem 1rem; }
-  a { color:#60a5fa; text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  @keyframes fade { from { opacity:.6; transform:translateY(2px)} to { opacity:1; transform:none } }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 3rem;
+    display: grid;
+    grid-template-columns: 290px 1fr;
+    gap: 1.4rem;
+  }
+
+  .sidebar,
+  .content section {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    backdrop-filter: blur(3px);
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .profile-photo {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto 1rem;
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+    background: #d8f6f4;
+  }
+
+  h1, h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    letter-spacing: 0.2px;
+    margin-top: 0;
+  }
+
+  h1 { margin-bottom: 0.3rem; font-size: 1.8rem; }
+  h2 { margin-bottom: 0.5rem; font-size: 1.45rem; }
+
+  .tagline {
+    color: var(--muted);
+    margin: 0 0 1rem;
+    font-size: 0.98rem;
+  }
+
+  .sidebar-links {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .content section {
+    padding: 1.2rem 1.25rem;
+  }
+
+  .publication {
+    margin-bottom: 0.95rem;
+    padding-bottom: 0.95rem;
+    border-bottom: 1px dashed rgba(15, 23, 42, 0.2);
+  }
+
+  .publication:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  a {
+    color: var(--link);
+    text-underline-offset: 2px;
+  }
+
+  .muted { color: var(--muted); }
+
+  @media (max-width: 860px) {
+    .layout {
+      grid-template-columns: 1fr;
+      padding-top: 1rem;
+    }
+
+    .sidebar {
+      position: static;
+    }
+  }
 </style>
 </head>
 <body>
-  <header>
-    <h1>[Weiming Sheng]</h1>
-    <p>Philosophy • Stats • ML</p>
-  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Profile">
+      <img class="profile-photo" src="0142.JPG" alt="Portrait of Weiming Sheng" />
+      <h1>Weiming Sheng</h1>
+      <p class="tagline">Philosophy • Statistics • Machine Learning</p>
+      <p class="muted">I work on reliability, semantics, and design at the interface of formal methods and data/ML systems.</p>
 
-  <nav class="tabs" role="tablist" aria-label="Site sections">
-    <button class="tab-btn" role="tab" aria-selected="true" aria-controls="about" id="tab-about">About</button>
-    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="projects" id="tab-projects">Projects</button>
-    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="writing" id="tab-writing">Writing</button>
-    <button class="tab-btn" role="tab" aria-selected="false" aria-controls="contact" id="tab-contact">Contact</button>
-  </nav>
+      <div class="sidebar-links">
+        <a href="WeimingShengCV.pdf" target="_blank" rel="noopener noreferrer">Curriculum Vitae (PDF)</a>
+      </div>
+    </aside>
 
-  <main>
-    <section id="about" class="panel active" role="tabpanel" aria-labelledby="tab-about">
-      <h2>About</h2>
-      <p>Hi! I’m Wei. I work at the intersection of philosophy, statistics, and ML.
-         This site (a work in progress!) collects information related to my projects and teaching.</p>
-    </section>
+    <main class="content" id="main-content">
+      <section id="about">
+        <h2>About</h2>
+        <p>
+          Hi! I’m Wei. This is my academic page. I work at the intersection of philosophy,
+          statistics, and machine learning, with a focus on building systems that are both practical
+          and principled.
+        </p>
+        <p>
+          I am gradually expanding this page with research updates, teaching material, and a downloadable CV.
+        </p>
+      </section>
 
-    <section id="projects" class="panel" role="tabpanel" aria-labelledby="tab-projects">
-  <h2>Projects</h2>
-  <div class="cards">
-    <div class="card">
-      <h3>
-        <a href="https://arxiv.org/abs/2602.02335">
-          Building a Correct-by-Design Lakehouse for Humans and Agents
-        </a>
-      </h3>
-      <p>
-        Lakehouses are widely used for analytics and AI, but concurrent, untrusted access makes them unsafe by allowing runtime interface mismatches and partial effects in multi-table pipelines.
-        We make most illegal states unrepresentable via typed table contracts, Git-like data versioning, and transactional pipeline execution, with results from an Alloy model.
-      </p>
-    </div>
+      <section id="publications">
+        <h2>Publications</h2>
+        <article class="publication">
+          <strong>
+            <a href="https://arxiv.org/abs/2602.02335">Building a Correct-by-Design Lakehouse for Humans and Agents</a>
+          </strong>
+          <p class="muted">Preprint</p>
+          <p>
+            We show how typed table contracts, Git-like data versioning, and transactional pipeline
+            execution can make illegal states unrepresentable and avoid partial effects.
+          </p>
+        </article>
+      </section>
+
+      <section id="contact">
+        <h2>Contact</h2>
+        <p>Email: <a href="mailto:ws2720@columbia.edu">ws2720@columbia.edu</a></p>
+        <p>GitHub: <a href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">shengweiming</a></p>
+      </section>
+    </main>
   </div>
-</section>
-
-
-    <section id="teaching" class="panel" role="tabpanel" aria-labelledby="tab-writing">
-      <h2>Teaching</h2>
-      <ul>
-        <li><a href="#">to be updated</a></li>
-      </ul>
-    </section>
-
-    <section id="contact" class="panel" role="tabpanel" aria-labelledby="tab-contact">
-      <h2>Contact</h2>
-      <p>Email: ws2720-at-columbia.edu</a></p>
-      <p>GitHub: <a href="https://github.com/shengweiming" target="_blank">shengweiming</a></p>
-  
-    </section>
-  </main>
-
-  <footer>
-    <small>© 2026 Weiming Sheng.</small>
-  </footer>
-
-  <script>
-    // Accessible tab switching (no framework needed)
-    const tabs = document.querySelectorAll('[role="tab"]');
-    const panels = document.querySelectorAll('[role="tabpanel"]');
-
-    function activateTab(tab) {
-      tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
-      panels.forEach(p => p.classList.toggle('active', p.id === tab.getAttribute('aria-controls')));
-      tab.focus();
-    }
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => activateTab(tab));
-      tab.addEventListener('keydown', (e) => {
-        const i = Array.from(tabs).indexOf(tab);
-        if (e.key === 'ArrowRight') activateTab(tabs[(i+1) % tabs.length]);
-        if (e.key === 'ArrowLeft') activateTab(tabs[(i-1+tabs.length) % tabs.length]);
-      });
-    });
-  </script>
 </body>
 </html>
