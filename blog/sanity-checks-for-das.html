@@ -184,8 +184,8 @@
       <p>
         But how robust is this claim? In their paper, Geiger et al. test DAS on a randomly initialized network for
         their first experiment: a simple feed-forward network on a hierarchical equality task. They find
-        that IIA stays near chance for small networks but creeps upward as hidden dimensionality grows. This is worrying. 
-        However, for the flagship experiment involving BERT on Monotonicity NLI, they don't run this
+        that IIA stays near chance for small networks but creeps upward as hidden dimensionality grows. This is already worrying. 
+        Moreover, for the flagship experiment involving BERT on Monotonicity NLI (henceforth MoNLI), they don't run this
         check. BERT has a 768-dimensional hidden representation. With an intervention size of 256, DAS
         is searching through a third of the entire representation space. Is that enough room for the
         method to find spurious alignments through geometric coincidence rather than genuine
@@ -199,6 +199,7 @@
 
       <h2>Background: How DAS Works</h2>
       <p>
+        Here's a little background on how DAS works, but the details don't matter that much to understand the experiments.
         The setup is as follows. You have a trained neural network (the "low-level model") and an
         interpretable causal model (the "high-level model") that you hypothesize explains the network's
         behavior. For MoNLI, the high-level model says:
@@ -214,8 +215,8 @@
         operationalized through <em>interchange interventions</em>: take a base input and a source input,
         swap the subspace corresponding to (say) V1 from the source into the base, unrotate, and feed
         the result through the remaining layers. If the output matches what the high-level model predicts
-        should happen when you swap V1, that's a hit. The proportion of hits is the Interchange
-        Intervention Accuracy (IIA).
+        should happen when you swap V1, that's a hit. The proportion of hits is the <em>Interchange
+        Intervention Accuracy (IIA)</em>.
       </p>
       <p>
         DAS learns the rotation matrix via gradient descent, minimizing a cross-entropy loss between the
@@ -250,8 +251,7 @@
         <strong>Question:</strong> If we randomize all of BERT's weights, can DAS still find high IIA?
       </p>
       <p>
-        This is the most basic sanity check. A fully random network has ~50% task accuracy (chance on
-        binary classification) and no learned representations. If DAS finds high IIA here, it means the
+        This is the most basic sanity check. A fully random network has task accuracy at chance and no learned representations. If DAS finds high IIA here, it means the
         method is exploiting the geometry of the 768-dimensional space rather than discovering genuine
         structure.
       </p>
@@ -402,8 +402,8 @@
         These results stand in interesting contrast to recent findings on other interpretability methods.
         Adebayo et al. (2018) showed that Guided BackProp is invariant to model parameters. More
         recently, a <a href="https://arxiv.org/abs/2602.14111">February 2026 paper</a> applied similar
-        sanity checks to Sparse Autoencoders (SAEs) and found that frozen baselines — where encoder or
-        decoder weights are randomly initialized and never trained — match fully-trained SAEs on standard
+        sanity checks to Sparse Autoencoders (SAEs) and found that frozen baselines, where encoder or
+        decoder weights are randomly initialized and never trained, match fully-trained SAEs on standard
         evaluation metrics including interpretability scores, sparse probing, and causal editing. The
         authors conclude that current SAE evaluation metrics are too weak to distinguish genuine feature
         learning from exploitation of random structure.
@@ -417,10 +417,8 @@
         afflicts less structured approaches.
       </p>
       <p>
-        That said, the tests presented here are not exhaustive. I only tested "obviously wrong" causal
-        models (shuffled labels, random variables). A stronger test would use plausible-but-wrong models
-        — for example, causal variables that correlate with the task (like lexical overlap or sentence
-        length) but aren't the true causal mechanism. I leave this for future work.
+        That said, the tests presented here are clearly not conclusive I only tested obviously wrong causal
+        models, for instance. A stronger test might involve more plausible but wrong models. I leave this for future work.
       </p>
 
       <h2>Acknowledgments</h2>
