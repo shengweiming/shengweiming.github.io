@@ -1,0 +1,76 @@
+
+<div style="position: relative; width: 100%; height: 380px;">
+  <canvas id="progChart"></canvas>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const textColor = isDark ? '#e0e0e0' : '#2C2C2A';
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+const labels = ['None','Cls','+ L11','+ L10','+ L9','+ L8','+ L7','+ L6','+ L5','+ L4','+ L3','+ L2','+ L1','+ L0','+ Emb'];
+const iia = [0.952,0.947,0.682,0.699,0.551,0.517,0.350,0.328,0.340,0.328,0.364,0.416,0.342,0.336,0.339];
+const taskF1 = [0.999,0.760,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333];
+new Chart(document.getElementById('progChart'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        label: 'IIA',
+        data: iia,
+        borderColor: '#534AB7',
+        backgroundColor: '#534AB7',
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointBackgroundColor: '#534AB7',
+        tension: 0.25
+      },
+      {
+        label: 'Task F1',
+        data: taskF1,
+        borderColor: '#1D9E75',
+        backgroundColor: '#1D9E75',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#1D9E75',
+        borderDash: [6,3],
+        tension: 0.25
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        min: 0, max: 1.05,
+        ticks: { color: textColor, font: { size: 12 }, callback: v => v.toFixed(1) },
+        grid: { color: gridColor }
+      },
+      x: {
+        ticks: { color: textColor, font: { size: 11 }, maxRotation: 45, autoSkip: false },
+        grid: { display: false }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      annotation: {
+        annotations: {
+          line1: {
+            type: 'line',
+            yMin: 0.5, yMax: 0.5,
+            borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)',
+            borderWidth: 1,
+            borderDash: [4,4]
+          }
+        }
+      }
+    }
+  }
+});
+</script>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; font-size: 12px; color: var(--color-text-secondary);">
+  <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 10px; height: 10px; border-radius: 2px; background: #534AB7;"></span>DAS IIA</span>
+  <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 14px; height: 0; border-top: 2px dashed #1D9E75;"></span>Task F1</span>
+  <span style="font-style: italic; color: var(--color-text-tertiary);">Dashed gray = chance level (0.50)</span>
+</div>
