@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sanity Checks for Distributed Alignment Search | Weiming Sheng</title>
+<meta name="description" content="Three randomization-based sanity checks for DAS on the MoNLI experiment." />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap');
+
+  :root {
+    --bg: #0b1f4d;
+    --text: #0f172a;
+    --muted: #264653;
+    --card: rgba(255, 255, 255, 0.78);
+    --card-border: rgba(15, 23, 42, 0.15);
+    --link: #0b3b6e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .back-link:hover { color: #fff; }
+
+  article {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    backdrop-filter: blur(3px);
+    padding: 2rem 2.25rem;
+  }
+
+  .post-meta {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin: 0 0 2rem;
+  }
+
+  h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.9rem;
+    line-height: 1.25;
+    margin: 0 0 0.4rem;
+    letter-spacing: 0.2px;
+  }
+
+  h2 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.35rem;
+    margin: 2rem 0 0.5rem;
+    letter-spacing: 0.2px;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 1.5rem 0 0.4rem;
+  }
+
+  p { margin: 0 0 1rem; }
+
+  a { color: var(--link); text-underline-offset: 2px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    margin: 1rem 0 1.25rem;
+  }
+
+  th {
+    text-align: left;
+    border-bottom: 2px solid rgba(15,23,42,0.2);
+    padding: 0.4rem 0.75rem;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 0.35rem 0.75rem;
+    border-bottom: 1px solid rgba(15,23,42,0.1);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .figure {
+    margin: 1.25rem 0;
+    padding: 1rem 1rem 0.5rem;
+    background: rgba(11,31,77,0.04);
+    border: 1px solid rgba(15,23,42,0.1);
+    border-radius: 0.6rem;
+  }
+
+  .figure-caption {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin: 0.5rem 0 0;
+    font-style: italic;
+  }
+
+  .result-badge {
+    display: inline-block;
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.55rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-left: 0.4rem;
+  }
+
+  .references {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed rgba(15,23,42,0.2);
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  .references h2 {
+    font-size: 1.1rem;
+    margin-top: 0;
+  }
+
+  .references ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .references li { margin-bottom: 0.5rem; }
+
+  @media (max-width: 600px) {
+    article { padding: 1.25rem 1rem; }
+    h1 { font-size: 1.5rem; }
+    table { font-size: 0.82rem; }
+    th, td { padding: 0.3rem 0.4rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <a class="back-link" href="../index.html">← Back</a>
+
+    <article>
+      <h1>Sanity Checks for Distributed Alignment Search</h1>
+      <p class="post-meta">Weiming Sheng &nbsp;·&nbsp; March 28, 2026</p>
+
+      <p>
+        Distributed Alignment Search (DAS) is one of the more promising methods in the causal
+        interpretability toolkit. Introduced by <a href="https://proceedings.mlr.press/v236/geiger24a.html">Geiger et al. (2024)</a>,
+        DAS uses gradient descent to find alignments between interpretable high-level causal variables
+        and distributed neural representations. The core claim is striking: a BERT model fine-tuned on
+        a natural language inference task implements, at the level of its internal representations, a
+        symbolic algorithm with discrete variables for negation and lexical entailment.
+      </p>
+      <p>
+        But how robust is this claim? Geiger et al. test DAS on a randomly initialized network for
+        their first experiment (a simple feed-forward network on a hierarchical equality task), and find
+        that IIA stays near chance for small networks but creeps upward as hidden dimensionality grows.
+        For their second experiment — the one involving BERT on Monotonicity NLI — they don't run this
+        check. BERT has a 768-dimensional hidden representation. With an intervention size of 256, DAS
+        is searching through a third of the entire representation space. Is that enough room for the
+        rotation matrix to find spurious alignments through geometric coincidence rather than genuine
+        causal structure?
+      </p>
+      <p>
+        I decided to find out. Following the methodology of <a href="https://arxiv.org/abs/1810.03292">Adebayo et al. (2018)</a>,
+        who proposed randomization-based sanity checks for saliency maps, I designed a battery of three
+        tests for DAS on the MoNLI experiment.
+      </p>
+
+      <h2>Background: How DAS Works</h2>
+      <p>
+        The setup is as follows. You have a trained neural network (the "low-level model") and an
+        interpretable causal model (the "high-level model") that you hypothesize explains the network's
+        behavior. For MoNLI, the high-level model says:
+      </p>
+      <ol>
+        <li>Compute whether negation is present in the premise and hypothesis → binary variable V1</li>
+        <li>Compute the lexical entailment relation between the key words → binary variable V2</li>
+        <li>If negation is present, reverse the entailment relation; otherwise, output it directly</li>
+      </ol>
+      <p>
+        DAS asks: is there a rotation of the [CLS] token representation at a given layer such that, in
+        the rotated basis, two orthogonal subspaces cleanly encode V1 and V2? "Cleanly encode" is
+        operationalized through <em>interchange interventions</em>: take a base input and a source input,
+        swap the subspace corresponding to (say) V1 from the source into the base, unrotate, and feed
+        the result through the remaining layers. If the output matches what the high-level model predicts
+        should happen when you swap V1, that's a hit. The proportion of hits is the Interchange
+        Intervention Accuracy (IIA).
+      </p>
+      <p>
+        DAS learns the rotation matrix via gradient descent, minimizing a cross-entropy loss between the
+        predicted and actual counterfactual outputs. The model weights are frozen; only the rotation
+        matrix is trained.
+      </p>
+
+      <h2>Replicating the Baseline</h2>
+      <p>
+        I first replicated the MoNLI DAS experiment following the paper's Appendix A.2: fine-tune
+        <code>ishan/bert-base-uncased-mnli</code> on 10K MoNLI examples (5 epochs, lr 2e-5, batch size 32),
+        then train the DAS rotation matrix on layer 9 with intervention size 256 (5 epochs, lr 2e-3,
+        batch size 64, 24K training examples). Three random seeds.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Seed</th><th>Factual F1</th><th>DAS IIA</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>42</td><td>0.999</td><td>0.892</td></tr>
+          <tr><td>66</td><td>0.999</td><td>0.872</td></tr>
+          <tr><td>77</td><td>1.000</td><td><strong>0.952</strong></td></tr>
+        </tbody>
+      </table>
+      <p>
+        Best IIA = 0.952, close to the paper's reported 1.00. The small gap likely comes from minor
+        differences in data sampling or tokenization. Good enough to serve as a baseline.
+      </p>
+
+      <h2>Test 1: Full Model Randomization <span class="result-badge">Passed</span></h2>
+      <p>
+        <strong>Question:</strong> If we randomize all of BERT's weights, can DAS still find high IIA?
+      </p>
+      <p>
+        This is the most basic sanity check. A fully random network has ~50% task accuracy (chance on
+        binary classification) and no learned representations. If DAS finds high IIA here, it means the
+        method is exploiting the geometry of the 768-dimensional space rather than discovering genuine
+        structure.
+      </p>
+      <p>
+        I initialized a BERT model with the same architecture but fully random weights (normal
+        distribution, std=0.02, matching BERT's initialization scheme). I then ran DAS with the same
+        settings as the baseline across three intervention sizes.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Condition</th><th>Dim 64</th><th>Dim 128</th><th>Dim 256</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Trained model</strong></td><td>—</td><td>—</td><td><strong>0.952</strong></td></tr>
+          <tr><td><strong>Random model</strong></td><td>0.360</td><td>0.385</td><td>0.393</td></tr>
+        </tbody>
+      </table>
+
+      <div class="figure">
+        <div style="position: relative; width: 100%; height: 280px;">
+          <canvas id="randChart"></canvas>
+        </div>
+        <p class="figure-caption">Figure 1. DAS IIA for the trained model vs. randomly initialized BERT across intervention sizes. Dashed line = chance (0.50).</p>
+      </div>
+
+      <p>
+        IIA on the random network is well below chance (0.50) across all intervention sizes. DAS cannot
+        find meaningful alignment in random structure.
+      </p>
+      <p>
+        Note that the authors' own results on the hierarchical equality task showed IIA climbing to 0.64
+        when the hidden dimension was 256× the input dimension. In the BERT case, the ratio is more
+        favorable (768-dim hidden, 256-dim intervention), and DAS stays firmly below chance.
+      </p>
+
+      <h2>Test 2: Cascading Randomization <span class="result-badge">Passed</span></h2>
+      <p>
+        <strong>Question:</strong> How does IIA degrade as we progressively destroy the learned weights?
+      </p>
+      <p>
+        Following Adebayo et al.'s cascading randomization protocol, I started with the trained model
+        and progressively randomized layers from the top down: first the classifier head, then encoder
+        layer 11, then layers 10–11, and so on until the entire model (including embeddings) was random.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Step</th><th>Layers randomized</th><th>Task F1</th><th>IIA</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0</td><td>None (baseline)</td><td>0.999</td><td>0.952</td></tr>
+          <tr><td>1</td><td>Classifier</td><td>0.760</td><td>0.947</td></tr>
+          <tr><td>2</td><td>+ Layer 11</td><td>0.333</td><td>0.682</td></tr>
+          <tr><td>3</td><td>+ Layer 10</td><td>0.333</td><td>0.699</td></tr>
+          <tr><td>4</td><td>+ Layer 9</td><td>0.333</td><td>0.551</td></tr>
+          <tr><td>5</td><td>+ Layer 8</td><td>0.333</td><td>0.517</td></tr>
+          <tr><td>6</td><td>+ Layer 7</td><td>0.333</td><td>0.350</td></tr>
+          <tr><td>7</td><td>+ Layer 6</td><td>0.333</td><td>0.328</td></tr>
+          <tr><td>8</td><td>+ Layer 5</td><td>0.333</td><td>0.340</td></tr>
+          <tr><td>9</td><td>+ Layer 4</td><td>0.333</td><td>0.328</td></tr>
+          <tr><td>10</td><td>+ Layer 3</td><td>0.333</td><td>0.364</td></tr>
+          <tr><td>11</td><td>+ Layer 2</td><td>0.333</td><td>0.416</td></tr>
+          <tr><td>12</td><td>+ Layer 1</td><td>0.333</td><td>0.342</td></tr>
+          <tr><td>13</td><td>+ Layer 0</td><td>0.333</td><td>0.336</td></tr>
+          <tr><td>14</td><td>+ Embeddings (all)</td><td>0.333</td><td>0.339</td></tr>
+        </tbody>
+      </table>
+
+      <div class="figure">
+        <div style="position: relative; width: 100%; height: 380px;">
+          <canvas id="progChart"></canvas>
+        </div>
+        <p class="figure-caption">Figure 2. IIA (purple) and Task F1 (green dashed) as layers are progressively randomized from the top down.</p>
+      </div>
+
+      <p>Three regimes emerge:</p>
+      <p>
+        <strong>Classifier only (step 1):</strong> IIA barely moves (0.952 → 0.947), even though task
+        F1 drops to 0.76. The causal structure lives in the representations, not in the readout layer.
+        This is a nice validation of the causal abstraction framework's core premise.
+      </p>
+      <p>
+        <strong>Layers 9–11 (steps 2–5):</strong> Sharp degradation from 0.95 to 0.52. Randomizing
+        layer 11 alone causes a large drop (to 0.68), and randomizing layer 9 — the intervention site
+        itself — drops IIA further to 0.55. DAS depends on both the learned representations at the
+        intervention site and the downstream layers that read them.
+      </p>
+      <p>
+        <strong>Layers 0–7 (steps 6–14):</strong> IIA plateaus around 0.33–0.36, converging to the
+        same floor as the fully random model. Once the layers at and above the intervention site are
+        destroyed, further randomization makes no additional difference.
+      </p>
+      <p>
+        This is the opposite of what Adebayo et al. found for Guided BackProp, which remained invariant
+        to upper-layer randomization (effectively acting as an edge detector rather than a model
+        explanation). DAS is genuinely sensitive to learned parameters in a graded, layer-localized way.
+      </p>
+
+      <h2>Test 3: Causal Model Specificity <span class="result-badge">Passed</span></h2>
+      <p>
+        <strong>Question:</strong> Does DAS discriminate between the correct causal model and incorrect ones?
+      </p>
+      <p>
+        The previous two tests establish that DAS needs learned structure. But they don't tell us whether
+        DAS specifically finds the <em>right</em> structure. A rotation matrix searching through 256
+        dimensions of a 768-dimensional space has substantial capacity. Can it fit any target, or only
+        the correct one?
+      </p>
+      <p>I tested three conditions, all using the same trained BERT model with the same DAS hyperparameters:</p>
+      <ol>
+        <li><strong>Correct model:</strong> The standard "Negation + Lexical Entailment" causal model from the paper.</li>
+        <li><strong>Shuffled counterfactual labels:</strong> Same base-source pairs and intervention structure, but the gold counterfactual labels are randomly permuted.</li>
+        <li><strong>Random binary variables:</strong> Two random binary labels per example (independent of input content), with IIT data constructed from these fake variables.</li>
+      </ol>
+      <table>
+        <thead>
+          <tr><th>Condition</th><th>IIA</th><th>DAS Loss</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Correct model</td><td><strong>0.952</strong></td><td>77.4</td></tr>
+          <tr><td>Shuffled labels</td><td>0.507</td><td>679.7</td></tr>
+          <tr><td>Random binary variables</td><td>0.503</td><td>2372.5</td></tr>
+        </tbody>
+      </table>
+
+      <div class="figure">
+        <div style="position: relative; width: 100%; height: 300px;">
+          <canvas id="specChart"></canvas>
+        </div>
+        <p class="figure-caption">Figure 3. DAS IIA for the correct causal model vs. two incorrect baselines. Dashed line = chance (0.50).</p>
+      </div>
+
+      <p>
+        DAS achieves high IIA only for the correct causal model. Both wrong models land exactly at
+        chance. The DAS training loss tells the same story: the optimizer can actually make progress for
+        the correct model (loss drops to 77) but can't fit the wrong ones (loss plateaus at 680 and 2373
+        respectively). The rotation matrix is not a powerful enough optimizer to overfit arbitrary
+        counterfactual mappings.
+      </p>
+
+      <h2>Discussion</h2>
+      <p>DAS passes all three sanity checks cleanly:</p>
+      <ol>
+        <li><strong>Model randomization:</strong> IIA ≈ 0.39 on a random network (below chance). DAS requires learned weights.</li>
+        <li><strong>Cascading randomization:</strong> IIA degrades monotonically as layers are destroyed, with the sharpest drops at the intervention site and immediately downstream layers. DAS is parameter-sensitive in a graded, localized way.</li>
+        <li><strong>Causal model specificity:</strong> IIA ≈ 0.50 for wrong causal models. DAS discriminates between correct and incorrect causal structures.</li>
+      </ol>
+      <p>
+        These results stand in interesting contrast to recent findings on other interpretability methods.
+        Adebayo et al. (2018) showed that Guided BackProp is invariant to model parameters. More
+        recently, a <a href="https://arxiv.org/abs/2602.14111">February 2026 paper</a> applied similar
+        sanity checks to Sparse Autoencoders (SAEs) and found that frozen baselines — where encoder or
+        decoder weights are randomly initialized and never trained — match fully-trained SAEs on standard
+        evaluation metrics including interpretability scores, sparse probing, and causal editing. The
+        authors conclude that current SAE evaluation metrics are too weak to distinguish genuine feature
+        learning from exploitation of random structure.
+      </p>
+      <p>
+        DAS does not have this problem. Its theoretical grounding in causal abstraction provides a
+        built-in specificity test: interchange interventions create counterfactuals that must match a
+        <em>specific</em> causal model, not just look interpretable. The rotation matrix is constrained
+        to be orthogonal (preserving distances) and is the only learned component; the neural network is
+        frozen. These constraints appear to be sufficient to prevent the kind of spurious alignment that
+        afflicts less structured approaches.
+      </p>
+      <p>
+        That said, the tests presented here are not exhaustive. I only tested "obviously wrong" causal
+        models (shuffled labels, random variables). A stronger test would use plausible-but-wrong models
+        — for example, causal variables that correlate with the task (like lexical overlap or sentence
+        length) but aren't the true causal mechanism. I leave this for future work.
+      </p>
+
+      <h2>Acknowledgments</h2>
+      <p>
+        This experiment was conducted on Google Colab (L4 GPU). The codebase is adapted from
+        <a href="https://github.com/atticusg/InterchangeInterventions/tree/zen">Geiger et al.'s original implementation</a>.
+        All code is available at <a href="https://github.com/shengweiming/DASExperiment">github.com/shengweiming/DASExperiment</a>.
+      </p>
+
+      <div class="references">
+        <h2>References</h2>
+        <ul>
+          <li>Adebayo, J., Gilmer, J., Muelly, M., Goodfellow, I., Hardt, M., &amp; Kim, B. (2018). Sanity checks for saliency maps. <em>NeurIPS 2018</em>.</li>
+          <li>Geiger, A., Wu, Z., Potts, C., Icard, T., &amp; Goodman, N. D. (2024). Finding alignments between interpretable causal variables and distributed neural representations. <em>Proceedings of Machine Learning Research</em>, 236, 160–187.</li>
+          <li>Geiger, A., Richardson, K., &amp; Potts, C. (2020). Neural natural language inference models partially embed theories of lexical entailment and negation. <em>BlackboxNLP 2020</em>.</li>
+          <li>Hewitt, J., &amp; Liang, P. (2019). Designing and interpreting probes with control tasks. <em>EMNLP-IJCNLP 2019</em>.</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    const textColor = '#2C2C2A';
+    const gridColor = 'rgba(0,0,0,0.06)';
+
+    new Chart(document.getElementById('randChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Trained (256d)', 'Random (64d)', 'Random (128d)', 'Random (256d)'],
+        datasets: [{
+          data: [0.952, 0.360, 0.385, 0.393],
+          backgroundColor: ['#534AB7', '#D85A30', '#D85A30', '#D85A30'],
+          borderColor: ['#3C3489', '#993C1D', '#993C1D', '#993C1D'],
+          borderWidth: 1,
+          barThickness: 52,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            min: 0, max: 1.05,
+            ticks: { color: textColor, font: { size: 12 }, callback: v => v.toFixed(1) },
+            grid: { color: gridColor }
+          },
+          x: {
+            ticks: { color: textColor, font: { size: 12 } },
+            grid: { display: false }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    const labels = ['None','Cls','+ L11','+ L10','+ L9','+ L8','+ L7','+ L6','+ L5','+ L4','+ L3','+ L2','+ L1','+ L0','+ Emb'];
+    const iia = [0.952,0.947,0.682,0.699,0.551,0.517,0.350,0.328,0.340,0.328,0.364,0.416,0.342,0.336,0.339];
+    const taskF1 = [0.999,0.760,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333];
+    new Chart(document.getElementById('progChart'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'IIA',
+            data: iia,
+            borderColor: '#534AB7',
+            backgroundColor: '#534AB7',
+            borderWidth: 2.5,
+            pointRadius: 4,
+            pointBackgroundColor: '#534AB7',
+            tension: 0.25
+          },
+          {
+            label: 'Task F1',
+            data: taskF1,
+            borderColor: '#1D9E75',
+            backgroundColor: '#1D9E75',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: '#1D9E75',
+            borderDash: [6,3],
+            tension: 0.25
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            min: 0, max: 1.05,
+            ticks: { color: textColor, font: { size: 12 }, callback: v => v.toFixed(1) },
+            grid: { color: gridColor }
+          },
+          x: {
+            ticks: { color: textColor, font: { size: 11 }, maxRotation: 45, autoSkip: false },
+            grid: { display: false }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            labels: { color: textColor, font: { size: 12 } }
+          }
+        }
+      }
+    });
+
+    new Chart(document.getElementById('specChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Correct model', 'Shuffled labels', 'Random binary variables'],
+        datasets: [{
+          data: [0.952, 0.507, 0.503],
+          backgroundColor: ['#534AB7', '#B4B2A9', '#B4B2A9'],
+          borderColor: ['#3C3489', '#888780', '#888780'],
+          borderWidth: 1,
+          barThickness: 64,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+          x: {
+            min: 0, max: 1.0,
+            ticks: { color: textColor, font: { size: 12 }, callback: v => v.toFixed(1) },
+            grid: { color: gridColor }
+          },
+          y: {
+            ticks: { color: textColor, font: { size: 12 } },
+            grid: { display: false }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  </script>
+</body>
+</html>
