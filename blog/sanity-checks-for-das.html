@@ -167,27 +167,34 @@
       <p class="post-meta">Weiming Sheng &nbsp;·&nbsp; March 28, 2026</p>
 
       <p>
+        Interpretability methods like linear probes investigate the representation encoded in certain parts of a neural network. 
+        However, what we really care about, usually, is whether and how the model is <em>using</em> that representation for making predictions.
+        On a strong reading, this asks for the <em>causal relationship</em> between representations and outputs.
+        We can call this the causal interpretability question.
+        </p>
+      
         Distributed Alignment Search (DAS) is one of the more promising methods in the causal
         interpretability toolkit. Introduced by <a href="https://proceedings.mlr.press/v236/geiger24a.html">Geiger et al. (2024)</a>,
         DAS uses gradient descent to find alignments between interpretable high-level causal variables
-        and distributed neural representations. The core claim is striking: a BERT model fine-tuned on
+        and distributed neural representations. The core claim is that a BERT model fine-tuned on
         a natural language inference task implements, at the level of its internal representations, a
-        symbolic algorithm with discrete variables for negation and lexical entailment.
+        symbolic algorithm with discrete variables for negation and lexical entailment. 
+        It is little exaggeration to say that this is the current flagship result for causal interpretability.
       </p>
       <p>
-        But how robust is this claim? Geiger et al. test DAS on a randomly initialized network for
-        their first experiment (a simple feed-forward network on a hierarchical equality task), and find
-        that IIA stays near chance for small networks but creeps upward as hidden dimensionality grows.
-        For their second experiment — the one involving BERT on Monotonicity NLI — they don't run this
+        But how robust is this claim? In their paper, Geiger et al. test DAS on a randomly initialized network for
+        their first experiment: a simple feed-forward network on a hierarchical equality task. They find
+        that IIA stays near chance for small networks but creeps upward as hidden dimensionality grows. This is worrying. 
+        However, for the flagship experiment involving BERT on Monotonicity NLI, they don't run this
         check. BERT has a 768-dimensional hidden representation. With an intervention size of 256, DAS
         is searching through a third of the entire representation space. Is that enough room for the
-        rotation matrix to find spurious alignments through geometric coincidence rather than genuine
+        method to find spurious alignments through geometric coincidence rather than genuine
         causal structure?
       </p>
       <p>
-        I decided to find out. Following the methodology of <a href="https://arxiv.org/abs/1810.03292">Adebayo et al. (2018)</a>,
+        Actually, it looks like no! Following the methodology of <a href="https://arxiv.org/abs/1810.03292">Adebayo et al. (2018)</a>,
         who proposed randomization-based sanity checks for saliency maps, I designed a battery of three
-        tests for DAS on the MoNLI experiment.
+        tests for DAS on the MoNLI experiment. And the good news is that DAS passed all of them.
       </p>
 
       <h2>Background: How DAS Works</h2>
