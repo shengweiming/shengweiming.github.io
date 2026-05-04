@@ -1,566 +1,829 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sanity Checks for Distributed Alignment Search | Weiming Sheng</title>
-<meta name="description" content="Three randomization-based sanity checks for DAS on the MoNLI experiment." />
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sanity Checks for Distributed Alignment Search — Weiming Sheng</title>
+  <meta name="description" content="Three randomization-based sanity checks for DAS on the MoNLI experiment." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" crossorigin />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #0b1f4d;
-    --text: #0f172a;
-    --muted: #264653;
-    --card: rgba(255, 255, 255, 0.78);
-    --card-border: rgba(15, 23, 42, 0.15);
-    --link: #0b3b6e;
-  }
+    :root {
+      --cream:      #F5F0E8;
+      --cream-mid:  #EBE4D8;
+      --cream-deep: #D8CFBF;
+      --ink:        #1C1712;
+      --ink-mid:    #3A3028;
+      --ink-light:  #7A6E62;
+      --terra:      oklch(52% 0.09 45);
+      --terra-pale: oklch(88% 0.05 45);
+      --mono:       'IBM Plex Mono', monospace;
+      --serif:      'Cormorant Garamond', serif;
+    }
 
-  * { box-sizing: border-box; }
+    html, body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--mono);
+      min-height: 100vh;
+    }
 
-  body {
-    margin: 0;
-    font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.75;
-  }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-  .page {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
-  }
+    /* ── LAYOUT ── */
+    .page {
+      display: flex;
+      min-height: 100vh;
+    }
 
-  .back-link {
-    display: inline-block;
-    margin-bottom: 1.5rem;
-    color: rgba(255,255,255,0.75);
-    text-decoration: none;
-    font-size: 0.9rem;
-  }
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      border-right: 1px solid var(--ink);
+      padding: 48px 28px 48px 40px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      flex-shrink: 0;
+    }
 
-  .back-link:hover { color: #fff; }
+    .sidebar-name {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 22px;
+      line-height: 1.1;
+      color: var(--terra);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 4px;
+    }
 
-  article {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 1rem;
-    backdrop-filter: blur(3px);
-    padding: 2rem 2.25rem;
-  }
+    .sidebar-name:hover { opacity: 0.8; }
 
-  .post-meta {
-    color: var(--muted);
-    font-size: 0.88rem;
-    margin: 0 0 2rem;
-  }
+    .sidebar-tagline {
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 36px;
+    }
 
-  h1 {
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: 1.9rem;
-    line-height: 1.25;
-    margin: 0 0 0.4rem;
-    letter-spacing: 0.2px;
-  }
+    .sidebar-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-decoration: none;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--cream-mid);
+      transition: color 0.15s;
+    }
 
-  h2 {
-    font-family: "Playfair Display", Georgia, serif;
-    font-size: 1.35rem;
-    margin: 2rem 0 0.5rem;
-    letter-spacing: 0.2px;
-  }
+    .sidebar-back:hover { color: var(--terra); }
+    .sidebar-back-arrow { font-size: 10px; }
 
-  h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin: 1.5rem 0 0.4rem;
-  }
+    .sidebar-toc {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
 
-  p { margin: 0 0 1rem; }
+    .toc-label {
+      font-size: 7px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--cream-mid);
+    }
 
-  a { color: var(--link); text-underline-offset: 2px; }
+    .toc-item {
+      font-size: 9px;
+      line-height: 1.4;
+      color: var(--ink-mid);
+      text-decoration: none;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--cream-mid);
+      transition: color 0.15s;
+      display: block;
+    }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.92rem;
-    margin: 1rem 0 1.25rem;
-  }
+    .toc-item:hover { color: var(--terra); }
 
-  th {
-    text-align: left;
-    border-bottom: 2px solid rgba(15,23,42,0.2);
-    padding: 0.4rem 0.75rem;
-    font-weight: 600;
-  }
+    /* Top strip */
+    .top-strip {
+      border-bottom: 1px solid var(--ink);
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 64px;
+      flex-shrink: 0;
+    }
 
-  td {
-    padding: 0.35rem 0.75rem;
-    border-bottom: 1px solid rgba(15,23,42,0.1);
-  }
+    .top-strip-label {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
 
-  tr:last-child td { border-bottom: none; }
+    /* Main content */
+    .main-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
 
-  .figure {
-    margin: 1.25rem 0;
-    padding: 1rem 1rem 0.5rem;
-    background: rgba(11,31,77,0.04);
-    border: 1px solid rgba(15,23,42,0.1);
-    border-radius: 0.6rem;
-  }
+    .content-area {
+      padding: 64px 64px 100px;
+      max-width: 760px;
+      animation: fadeUp 0.45s ease both;
+    }
 
-  .figure-caption {
-    font-size: 0.82rem;
-    color: var(--muted);
-    margin: 0.5rem 0 0;
-    font-style: italic;
-  }
+    /* Article header */
+    .article-tag {
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--terra);
+      background: var(--terra-pale);
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
 
-  .result-badge {
-    display: inline-block;
-    background: #d1fae5;
-    color: #065f46;
-    border: 1px solid #6ee7b7;
-    border-radius: 0.3rem;
-    padding: 0.1rem 0.55rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    margin-left: 0.4rem;
-  }
+    .article-title {
+      font-family: var(--serif);
+      font-size: 44px;
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+      text-wrap: balance;
+    }
 
-  .references {
-    margin-top: 2.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px dashed rgba(15,23,42,0.2);
-    font-size: 0.88rem;
-    color: var(--muted);
-  }
+    .article-meta {
+      font-size: 9px;
+      color: var(--ink-light);
+      letter-spacing: 0.1em;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--cream-mid);
+    }
 
-  .references h2 {
-    font-size: 1.1rem;
-    margin-top: 0;
-  }
+    .article-meta-sep { color: var(--cream-deep); }
 
-  .references ul {
-    margin: 0;
-    padding-left: 1.25rem;
-  }
+    /* Body text */
+    .prose p {
+      font-family: var(--serif);
+      font-size: 19px;
+      line-height: 1.82;
+      font-weight: 300;
+      color: var(--ink-mid);
+      margin-bottom: 24px;
+      text-wrap: pretty;
+    }
 
-  .references li { margin-bottom: 0.5rem; }
+    .prose p em { font-style: italic; color: var(--ink); }
 
-  @media (max-width: 600px) {
-    article { padding: 1.25rem 1rem; }
-    h1 { font-size: 1.5rem; }
-    table { font-size: 0.82rem; }
-    th, td { padding: 0.3rem 0.4rem; }
-  }
-</style>
+    .prose p a {
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-color: var(--cream-deep);
+      text-underline-offset: 3px;
+      transition: text-decoration-color 0.15s, color 0.15s;
+    }
+
+    .prose p a:hover {
+      color: var(--terra);
+      text-decoration-color: var(--terra);
+    }
+
+    /* Headings */
+    .prose h2 {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: 0;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-top: 52px;
+      margin-bottom: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--cream-mid);
+    }
+
+    /* Tables */
+    .prose .table-wrap {
+      overflow-x: auto;
+      margin: 28px 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .prose thead tr {
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .prose th {
+      text-align: left;
+      padding: 10px 16px;
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      font-weight: 500;
+    }
+
+    .prose td {
+      padding: 11px 16px;
+      color: var(--ink-mid);
+      border-bottom: 1px solid var(--cream-mid);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .prose td strong { color: var(--ink); font-weight: 500; }
+
+    .prose td em {
+      color: var(--terra);
+      font-style: normal;
+      font-weight: 500;
+    }
+
+    .prose tr:hover td { background: rgba(245,240,232,0.6); }
+
+    .prose .table-caption {
+      font-size: 9px;
+      color: var(--ink-light);
+      margin-top: -16px;
+      margin-bottom: 28px;
+      font-style: italic;
+      font-family: var(--serif);
+    }
+
+    /* Lists */
+    .prose ol {
+      font-family: var(--serif);
+      font-size: 19px;
+      line-height: 1.75;
+      font-weight: 300;
+      color: var(--ink-mid);
+      margin-bottom: 24px;
+      padding-left: 24px;
+    }
+
+    .prose ol li { margin-bottom: 8px; }
+
+    .prose ul {
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.9;
+      color: var(--ink-mid);
+      margin-bottom: 24px;
+      padding-left: 20px;
+      list-style: none;
+    }
+
+    .prose ul li { position: relative; padding-left: 16px; }
+
+    .prose ul li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--terra);
+    }
+
+    .prose ul li a {
+      color: var(--ink-mid);
+      text-decoration: underline;
+      text-decoration-color: var(--cream-deep);
+      text-underline-offset: 3px;
+    }
+
+    .prose ul li a:hover { color: var(--terra); text-decoration-color: var(--terra); }
+
+    /* Callout */
+    .callout {
+      background: var(--cream-mid);
+      border-left: 3px solid var(--terra);
+      padding: 20px 24px;
+      margin: 28px 0;
+    }
+
+    .callout p {
+      font-family: var(--mono) !important;
+      font-size: 11px !important;
+      font-weight: 400 !important;
+      color: var(--ink) !important;
+      margin-bottom: 0 !important;
+      line-height: 1.7 !important;
+    }
+
+    /* Three-result summary grid */
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--cream-deep);
+      margin: 28px 0;
+    }
+
+    .result-cell {
+      background: var(--cream);
+      padding: 20px;
+    }
+
+    .result-num {
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--terra);
+      margin-bottom: 8px;
+    }
+
+    .result-label {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .result-val {
+      font-size: 10px;
+      color: var(--ink-light);
+      line-height: 1.5;
+    }
+
+    /* Section divider */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 48px 0 0;
+      color: var(--ink-light);
+      font-size: 7px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .section-divider::before, .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--cream-mid);
+    }
+
+    /* References */
+    .references {
+      margin-top: 56px;
+      padding-top: 32px;
+      border-top: 1px solid var(--ink);
+    }
+
+    .references-label {
+      font-size: 8px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 24px;
+    }
+
+    .ref-item {
+      font-family: var(--serif);
+      font-size: 15px;
+      line-height: 1.7;
+      font-weight: 300;
+      color: var(--ink-mid);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--cream-mid);
+    }
+
+    .ref-item a {
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-color: var(--cream-deep);
+      text-underline-offset: 3px;
+    }
+
+    .ref-item a:hover { color: var(--terra); text-decoration-color: var(--terra); }
+
+    /* Acknowledgments */
+    .ack {
+      margin-top: 40px;
+      padding: 20px 24px;
+      background: var(--cream-mid);
+      font-family: var(--mono);
+      font-size: 10px;
+      line-height: 1.7;
+      color: var(--ink-light);
+    }
+
+    .ack a { color: var(--ink-mid); text-decoration: underline; text-decoration-color: var(--cream-deep); }
+    .ack a:hover { color: var(--terra); }
+
+    /* Inline code */
+    code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--cream-mid);
+      padding: 1px 5px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 760px) {
+      .page { flex-direction: column; }
+
+      .sidebar {
+        width: 100%;
+        min-width: 0;
+        position: static;
+        height: auto;
+        padding: 36px 24px 28px;
+        border-right: none;
+        border-bottom: 1px solid var(--ink);
+      }
+
+      .sidebar-toc { display: none; }
+      .top-strip { padding: 0 24px; }
+      .content-area { padding: 36px 24px 60px; }
+      .article-title { font-size: 32px; }
+      .result-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <div class="page">
-    <a class="back-link" href="../index.html">← Back</a>
+<div class="page">
 
-    <article>
-      <h1>Sanity Checks for Distributed Alignment Search</h1>
-      <p class="post-meta">Weiming Sheng &nbsp;·&nbsp; April 2, 2026</p>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a class="sidebar-name" href="../index.html">Weiming<br>Sheng</a>
+    <div class="sidebar-tagline">AI &amp; Philosophy</div>
+    <a class="sidebar-back" href="../index.html">
+      <span class="sidebar-back-arrow">←</span>
+      <span>Home</span>
+    </a>
+    <nav class="sidebar-toc" aria-label="Table of contents">
+      <div class="toc-label">Contents</div>
+      <a class="toc-item" href="#background">Background: How DAS Works</a>
+      <a class="toc-item" href="#baseline">Replicating the Baseline</a>
+      <a class="toc-item" href="#test1">Test 1: Full Model Randomization</a>
+      <a class="toc-item" href="#test2">Test 2: Cascading Randomization</a>
+      <a class="toc-item" href="#test3">Test 3: Causal Model Specificity</a>
+      <a class="toc-item" href="#discussion">Discussion</a>
+      <a class="toc-item" href="#references">References</a>
+    </nav>
+  </aside>
 
-      <p>
-        Interpretability methods like linear probes investigate the representation encoded in certain parts of a neural network. 
-        However, what we really care about, usually, is whether and how the model is <em>using</em> that representation for making predictions.
-        On a strong reading, this asks for the <em>causal relationship</em> between representations and outputs.
-        We can call this the causal interpretability question.
+  <!-- MAIN -->
+  <div class="main-col">
+    <div class="top-strip">
+      <span class="top-strip-label">Blog</span>
+      <span class="top-strip-label">April 2, 2026</span>
+    </div>
+
+    <div class="content-area">
+      <div class="article-tag">Research Note</div>
+      <h1 class="article-title">Sanity Checks for Distributed Alignment Search</h1>
+      <div class="article-meta">
+        <span>Weiming Sheng</span>
+        <span class="article-meta-sep">·</span>
+        <span>April 2, 2026</span>
+        <span class="article-meta-sep">·</span>
+        <span>Causal Interpretability</span>
+      </div>
+
+      <article class="prose">
+        <p>
+          Interpretability methods like linear probes investigate the representation encoded in
+          certain parts of a neural network. However, what we really care about, usually, is whether
+          and how the model is <em>using</em> that representation for making predictions. On a
+          strong reading, this asks for the <em>causal relationship</em> between representations and
+          outputs. We can call this the causal interpretability question.
         </p>
-      
-        Distributed Alignment Search (DAS) is one of the more promising methods in the causal
-        interpretability toolkit. Introduced by <a href="https://proceedings.mlr.press/v236/geiger24a.html">Geiger et al. (2024)</a>,
-        DAS uses gradient descent to find alignments between interpretable high-level causal variables
-        and distributed neural representations. The core claim is that a BERT model fine-tuned on
-        a natural language inference task implements, at the level of its internal representations, a
-        symbolic algorithm with discrete variables for negation and lexical entailment. 
-        It is little exaggeration to say that this is the current flagship result for causal interpretability.
-      </p>
-      <p>
-        But how robust is this claim? In their paper, Geiger et al. test DAS on a randomly initialized network for
-        their first experiment: a simple feed-forward network on a hierarchical equality task. They find
-        that IIA stays near chance for small networks but creeps upward as hidden dimensionality grows. This is already worrying. 
-        Moreover, for the flagship experiment involving BERT on Monotonicity NLI (henceforth MoNLI), they don't run this
-        check. BERT has a 768-dimensional hidden representation. With an intervention size of 256, DAS
-        is searching through a third of the entire representation space. Is that enough room for the
-        method to find spurious alignments through geometric coincidence rather than genuine
-        causal structure?
-      </p>
-      <p>
-        Actually, it looks like no! Following the methodology of <a href="https://arxiv.org/abs/1810.03292">Adebayo et al. (2018)</a>,
-        who proposed randomization-based sanity checks for saliency maps, I designed three basic robustness
-        tests for DAS on the MoNLI experiment. And the good news is that DAS passed all of them.
-      </p>
+        <p>
+          Distributed Alignment Search (DAS) is one of the more promising methods in the causal
+          interpretability toolkit. Introduced by <a href="https://proceedings.mlr.press/v236/geiger24a.html" target="_blank" rel="noopener noreferrer">Geiger et al. (2024)</a>,
+          DAS uses gradient descent to find alignments between interpretable high-level causal variables
+          and distributed neural representations. The core claim is that a BERT model fine-tuned on
+          a natural language inference task implements, at the level of its internal representations,
+          a symbolic algorithm with discrete variables for negation and lexical entailment. It is
+          little exaggeration to say that this is the current flagship result for causal interpretability.
+        </p>
+        <p>
+          But how robust is this claim? In their paper, Geiger et al. test DAS on a randomly initialized
+          network for their first experiment: a simple feed-forward network on a hierarchical equality
+          task. They find that IIA stays near chance for small networks but creeps upward as hidden
+          dimensionality grows. This is already worrying. Moreover, for the flagship experiment involving
+          BERT on Monotonicity NLI (henceforth MoNLI), they don't run this check. BERT has a
+          768-dimensional hidden representation. With an intervention size of 256, DAS is searching
+          through a third of the entire representation space. Is that enough room for the method to find
+          spurious alignments through geometric coincidence rather than genuine causal structure?
+        </p>
+        <p>
+          Actually, it looks like no! Following the methodology of <a href="https://arxiv.org/abs/1810.03292" target="_blank" rel="noopener noreferrer">Adebayo et al. (2018)</a>,
+          who proposed randomization-based sanity checks for saliency maps, I designed three basic
+          robustness tests for DAS on the MoNLI experiment. And the good news is that DAS passed
+          all of them.
+        </p>
 
-      <h2>Background: How DAS Works</h2>
-      <p>
-        Here's a little background on how DAS works, but the details don't matter that much to understand the experiments.
-        The setup is as follows. You have a trained neural network (the "low-level model") and an
-        interpretable causal model (the "high-level model") that you hypothesize explains the network's
-        behavior. For MoNLI, the high-level model says:
-      </p>
-      <ol>
-        <li>Compute whether negation is present in the premise and hypothesis → binary variable V1</li>
-        <li>Compute the lexical entailment relation between the key words → binary variable V2</li>
-        <li>If negation is present, reverse the entailment relation; otherwise, output it directly</li>
-      </ol>
-      <p>
-        DAS asks: is there a rotation of the [CLS] token representation at a given layer such that, in
-        the rotated basis, two orthogonal subspaces cleanly encode V1 and V2? "Cleanly encode" is
-        operationalized through <em>interchange interventions</em>: take a base input and a source input,
-        swap the subspace corresponding to (say) V1 from the source into the base, unrotate, and feed
-        the result through the remaining layers. If the output matches what the high-level model predicts
-        should happen when you swap V1, that's a hit. The proportion of hits is the <em>Interchange
-        Intervention Accuracy (IIA)</em>.
-      </p>
-      <p>
-        DAS learns the rotation matrix via gradient descent, minimizing a cross-entropy loss between the
-        predicted and actual counterfactual outputs. The model weights are frozen; only the rotation
-        matrix is trained.
-      </p>
-
-      <h2>Replicating the Baseline</h2>
-      <p>
-        I first replicated the MoNLI DAS experiment following the paper's Appendix A.2: fine-tune
-        <code>ishan/bert-base-uncased-mnli</code> on 10K MoNLI examples (5 epochs, lr 2e-5, batch size 32),
-        then train the DAS rotation matrix on layer 9 with intervention size 256 (5 epochs, lr 2e-3,
-        batch size 64, 24K training examples). Three random seeds.
-      </p>
-      <table>
-        <thead>
-          <tr><th>Seed</th><th>Factual F1</th><th>DAS IIA</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>42</td><td>0.999</td><td>0.892</td></tr>
-          <tr><td>66</td><td>0.999</td><td>0.872</td></tr>
-          <tr><td>77</td><td>1.000</td><td><strong>0.952</strong></td></tr>
-        </tbody>
-      </table>
-      <p>
-        Best IIA = 0.952, close to the paper's reported 1.00. The small gap likely comes from minor
-        differences in data sampling or tokenization. Good enough to serve as a baseline.
-      </p>
-
-      <h2>Test 1: Full Model Randomization <span class="result-badge">Passed</span></h2>
-      <p>
-        <strong>Question:</strong> If we randomize all of BERT's weights, can DAS still find high IIA?
-      </p>
-      <p>
-        This is the most basic sanity check. A fully random network has task accuracy at chance and no learned representations. If DAS finds high IIA here, it means the
-        method is exploiting the geometry of the 768-dimensional space rather than discovering genuine
-        structure.
-      </p>
-      <p>
-        I initialized a BERT model with the same architecture but fully random weights (normal
-        distribution, std=0.02, matching BERT's initialization scheme). I then ran DAS with the same
-        settings as the baseline across three intervention sizes.
-      </p>
-      <table>
-        <thead>
-          <tr><th>Condition</th><th>Dim 64</th><th>Dim 128</th><th>Dim 256</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><strong>Trained model</strong></td><td>—</td><td>—</td><td><strong>0.952</strong></td></tr>
-          <tr><td><strong>Random model</strong></td><td>0.360</td><td>0.385</td><td>0.393</td></tr>
-        </tbody>
-      </table>
-
-      <div class="figure">
-        <div style="position: relative; width: 100%; height: 280px;">
-          <canvas id="randChart"></canvas>
+        <div class="result-grid">
+          <div class="result-cell">
+            <div class="result-num">Test 01</div>
+            <div class="result-label">Full Randomization</div>
+            <div class="result-val">IIA ≈ 0.39 on random network</div>
+          </div>
+          <div class="result-cell">
+            <div class="result-num">Test 02</div>
+            <div class="result-label">Cascading Randomization</div>
+            <div class="result-val">Graded, layer-localized degradation</div>
+          </div>
+          <div class="result-cell">
+            <div class="result-num">Test 03</div>
+            <div class="result-label">Causal Specificity</div>
+            <div class="result-val">IIA ≈ 0.50 for wrong causal models</div>
+          </div>
         </div>
-        <p class="figure-caption">Figure 1. DAS IIA for the trained model vs. randomly initialized BERT across intervention sizes. Dashed line = chance (0.50).</p>
-      </div>
 
-      <p>
-        IIA on the random network is well below chance (0.50) across all intervention sizes. DAS cannot
-        find meaningful alignment in random structure.
-      </p>
-      <p>
-        Note that the authors' own results on the hierarchical equality task showed IIA climbing to 0.64
-        when the hidden dimension was 256× the input dimension. In the BERT case, the ratio is more
-        favorable (768-dim hidden, 256-dim intervention), and DAS stays firmly below chance.
-      </p>
+        <h2 id="background">Background: How DAS Works</h2>
+        <p>
+          The setup is as follows. You have a trained neural network (the "low-level model") and an
+          interpretable causal model (the "high-level model") that you hypothesize explains the
+          network's behavior. For MoNLI, the high-level model says:
+        </p>
+        <ol>
+          <li>Compute whether negation is present in the premise and hypothesis → binary variable V1</li>
+          <li>Compute the lexical entailment relation between the key words → binary variable V2</li>
+          <li>If negation is present, reverse the entailment relation; otherwise, output it directly</li>
+        </ol>
+        <p>
+          DAS asks: is there a rotation of the [CLS] token representation at a given layer such that,
+          in the rotated basis, two orthogonal subspaces cleanly encode V1 and V2? "Cleanly encode"
+          is operationalized through <em>interchange interventions</em>: take a base input and a source
+          input, swap the subspace corresponding to (say) V1 from the source into the base, unrotate,
+          and feed the result through the remaining layers. If the output matches what the high-level
+          model predicts should happen when you swap V1, that's a hit. The proportion of hits is the
+          <em>Interchange Intervention Accuracy (IIA)</em>.
+        </p>
+        <p>
+          DAS learns the rotation matrix via gradient descent, minimizing a cross-entropy loss between
+          the predicted and actual counterfactual outputs. The model weights are frozen; only the
+          rotation matrix is trained.
+        </p>
 
-      <h2>Test 2: Cascading Randomization <span class="result-badge">Passed</span></h2>
-      <p>
-        <strong>Question:</strong> How does IIA degrade as we progressively destroy the learned weights?
-      </p>
-      <p>
-        Following Adebayo et al.'s cascading randomization protocol, I started with the trained model
-        and progressively randomized layers from the top down: first the classifier head, then encoder
-        layer 11, then layers 10–11, and so on until the entire model (including embeddings) was random.
-      </p>
-      <table>
-        <thead>
-          <tr><th>Step</th><th>Layers randomized</th><th>Task F1</th><th>IIA</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>0</td><td>None (baseline)</td><td>0.999</td><td>0.952</td></tr>
-          <tr><td>1</td><td>Classifier</td><td>0.760</td><td>0.947</td></tr>
-          <tr><td>2</td><td>+ Layer 11</td><td>0.333</td><td>0.682</td></tr>
-          <tr><td>3</td><td>+ Layer 10</td><td>0.333</td><td>0.699</td></tr>
-          <tr><td>4</td><td>+ Layer 9</td><td>0.333</td><td>0.551</td></tr>
-          <tr><td>5</td><td>+ Layer 8</td><td>0.333</td><td>0.517</td></tr>
-          <tr><td>6</td><td>+ Layer 7</td><td>0.333</td><td>0.350</td></tr>
-          <tr><td>7</td><td>+ Layer 6</td><td>0.333</td><td>0.328</td></tr>
-          <tr><td>8</td><td>+ Layer 5</td><td>0.333</td><td>0.340</td></tr>
-          <tr><td>9</td><td>+ Layer 4</td><td>0.333</td><td>0.328</td></tr>
-          <tr><td>10</td><td>+ Layer 3</td><td>0.333</td><td>0.364</td></tr>
-          <tr><td>11</td><td>+ Layer 2</td><td>0.333</td><td>0.416</td></tr>
-          <tr><td>12</td><td>+ Layer 1</td><td>0.333</td><td>0.342</td></tr>
-          <tr><td>13</td><td>+ Layer 0</td><td>0.333</td><td>0.336</td></tr>
-          <tr><td>14</td><td>+ Embeddings (all)</td><td>0.333</td><td>0.339</td></tr>
-        </tbody>
-      </table>
-
-      <div class="figure">
-        <div style="position: relative; width: 100%; height: 380px;">
-          <canvas id="progChart"></canvas>
+        <h2 id="baseline">Replicating the Baseline</h2>
+        <p>
+          I first replicated the MoNLI DAS experiment following the paper's Appendix A.2: fine-tune
+          <code>ishan/bert-base-uncased-mnli</code> on 10K MoNLI examples
+          (5 epochs, lr 2e-5, batch size 32), then train the DAS rotation matrix on layer 9 with
+          intervention size 256 (5 epochs, lr 2e-3, batch size 64, 24K training examples). Three
+          random seeds.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Seed</th><th>Factual F1</th><th>DAS IIA</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>42</td><td>0.999</td><td>0.892</td></tr>
+              <tr><td>66</td><td>0.999</td><td>0.872</td></tr>
+              <tr><td>77</td><td>1.000</td><td><em>0.952</em></td></tr>
+            </tbody>
+          </table>
         </div>
-        <p class="figure-caption">Figure 2. IIA (purple) and Task F1 (green dashed) as layers are progressively randomized from the top down.</p>
-      </div>
+        <p>
+          Best IIA = 0.952, close to the paper's reported 1.00. The small gap likely comes from minor
+          differences in data sampling or tokenization. Good enough to serve as a baseline.
+        </p>
 
-      <p>Three regimes emerge:</p>
-      <p>
-        <strong>Classifier only (step 1):</strong> IIA barely moves (0.952 → 0.947), even though task
-        F1 drops to 0.76. The causal structure lives in the representations, not in the readout layer.
-        This is a nice validation of the causal abstraction framework's core premise.
-      </p>
-      <p>
-        <strong>Layers 9–11 (steps 2–5):</strong> Sharp degradation from 0.95 to 0.52. Randomizing
-        layer 11 alone causes a large drop (to 0.68), and randomizing layer 9 — the intervention site
-        itself — drops IIA further to 0.55. DAS depends on both the learned representations at the
-        intervention site and the downstream layers that read them.
-      </p>
-      <p>
-        <strong>Layers 0–7 (steps 6–14):</strong> IIA plateaus around 0.33–0.36, converging to the
-        same floor as the fully random model. Once the layers at and above the intervention site are
-        destroyed, further randomization makes no additional difference.
-      </p>
-      <p>
-        This is the opposite of what Adebayo et al. found for Guided BackProp, which remained invariant
-        to upper-layer randomization (effectively acting as an edge detector rather than a model
-        explanation). DAS is genuinely sensitive to learned parameters in a graded, layer-localized way.
-      </p>
-
-      <h2>Test 3: Causal Model Specificity <span class="result-badge">Passed</span></h2>
-      <p>
-        <strong>Question:</strong> Does DAS discriminate between the correct causal model and incorrect ones?
-      </p>
-      <p>
-        The previous two tests establish that DAS needs learned structure. But they don't tell us whether
-        DAS specifically finds the <em>right</em> structure. A rotation matrix searching through 256
-        dimensions of a 768-dimensional space has substantial capacity. Can it fit any target, or only
-        the correct one?
-      </p>
-      <p>I tested three conditions, all using the same trained BERT model with the same DAS hyperparameters:</p>
-      <ol>
-        <li><strong>Correct model:</strong> The standard "Negation + Lexical Entailment" causal model from the paper.</li>
-        <li><strong>Shuffled counterfactual labels:</strong> Same base-source pairs and intervention structure, but the gold counterfactual labels are randomly permuted.</li>
-        <li><strong>Random binary variables:</strong> Two random binary labels per example (independent of input content), with IIT data constructed from these fake variables.</li>
-      </ol>
-      <table>
-        <thead>
-          <tr><th>Condition</th><th>IIA</th><th>DAS Loss</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Correct model</td><td><strong>0.952</strong></td><td>77.4</td></tr>
-          <tr><td>Shuffled labels</td><td>0.507</td><td>679.7</td></tr>
-          <tr><td>Random binary variables</td><td>0.503</td><td>2372.5</td></tr>
-        </tbody>
-      </table>
-
-      <div class="figure">
-        <div style="position: relative; width: 100%; height: 300px;">
-          <canvas id="specChart"></canvas>
+        <h2 id="test1">Test 1: Full Model Randomization — Passed</h2>
+        <p>
+          <strong style="color:var(--ink)">Question:</strong> If we randomize all of BERT's weights,
+          can DAS still find high IIA?
+        </p>
+        <p>
+          This is the most basic sanity check. A fully random network has task accuracy at chance
+          and no learned representations. If DAS finds high IIA here, it means the method is
+          exploiting the geometry of the 768-dimensional space rather than discovering genuine structure.
+        </p>
+        <p>
+          I initialized a BERT model with the same architecture but fully random weights (normal
+          distribution, std=0.02, matching BERT's initialization scheme). I then ran DAS with the
+          same settings as the baseline across three intervention sizes.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Condition</th><th>Dim 64</th><th>Dim 128</th><th>Dim 256</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Trained model</strong></td><td>—</td><td>—</td><td><em>0.952</em></td></tr>
+              <tr><td><strong>Random model</strong></td><td>0.360</td><td>0.385</td><td>0.393</td></tr>
+            </tbody>
+          </table>
         </div>
-        <p class="figure-caption">Figure 3. DAS IIA for the correct causal model vs. two incorrect baselines. Dashed line = chance (0.50).</p>
-      </div>
+        <div class="callout">
+          <p>IIA on the random network is well below chance (0.50) across all intervention sizes. DAS cannot find meaningful alignment in random structure.</p>
+        </div>
+        <p>
+          Note that the authors' own results on the hierarchical equality task showed IIA climbing
+          to 0.64 when the hidden dimension was 256× the input dimension. In the BERT case, the ratio
+          is more favorable (768-dim hidden, 256-dim intervention), and DAS stays firmly below chance.
+        </p>
 
-      <p>
-        DAS achieves high IIA only for the correct causal model. Both wrong models land exactly at
-        chance. The DAS training loss tells the same story: the optimizer can actually make progress for
-        the correct model (loss drops to 77) but can't fit the wrong ones (loss plateaus at 680 and 2373
-        respectively). The rotation matrix is not a powerful enough optimizer to overfit arbitrary
-        counterfactual mappings.
-      </p>
+        <h2 id="test2">Test 2: Cascading Randomization — Passed</h2>
+        <p>
+          <strong style="color:var(--ink)">Question:</strong> How does IIA degrade as we progressively
+          destroy the learned weights?
+        </p>
+        <p>
+          Following Adebayo et al.'s cascading randomization protocol, I started with the trained model
+          and progressively randomized layers from the top down: first the classifier head, then encoder
+          layer 11, then layers 10–11, and so on until the entire model was random.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Step</th><th>Layers Randomized</th><th>Task F1</th><th>IIA</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>0</td><td>None (baseline)</td><td>0.999</td><td><em>0.952</em></td></tr>
+              <tr><td>1</td><td>Classifier</td><td>0.760</td><td>0.947</td></tr>
+              <tr><td>2</td><td>+ Layer 11</td><td>0.333</td><td>0.682</td></tr>
+              <tr><td>3</td><td>+ Layer 10</td><td>0.333</td><td>0.699</td></tr>
+              <tr><td>4</td><td>+ Layer 9</td><td>0.333</td><td>0.551</td></tr>
+              <tr><td>5</td><td>+ Layer 8</td><td>0.333</td><td>0.517</td></tr>
+              <tr><td>6</td><td>+ Layer 7</td><td>0.333</td><td>0.350</td></tr>
+              <tr><td>7</td><td>+ Layer 6</td><td>0.333</td><td>0.328</td></tr>
+              <tr><td>8</td><td>+ Layer 5</td><td>0.333</td><td>0.340</td></tr>
+              <tr><td>9</td><td>+ Layer 4</td><td>0.333</td><td>0.328</td></tr>
+              <tr><td>10</td><td>+ Layer 3</td><td>0.333</td><td>0.364</td></tr>
+              <tr><td>11</td><td>+ Layer 2</td><td>0.333</td><td>0.416</td></tr>
+              <tr><td>12</td><td>+ Layer 1</td><td>0.333</td><td>0.342</td></tr>
+              <tr><td>13</td><td>+ Layer 0</td><td>0.333</td><td>0.336</td></tr>
+              <tr><td>14</td><td>+ Embeddings (all)</td><td>0.333</td><td>0.339</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Three regimes emerge:</p>
+        <p>
+          <strong style="color:var(--ink)">Classifier only (step 1):</strong> IIA barely moves
+          (0.952 → 0.947), even though task F1 drops to 0.76. The causal structure lives in the
+          representations, not in the readout layer. This is a nice validation of the causal
+          abstraction framework's core premise.
+        </p>
+        <p>
+          <strong style="color:var(--ink)">Layers 9–11 (steps 2–5):</strong> Sharp degradation
+          from 0.95 to 0.52. Randomizing layer 11 alone causes a large drop (to 0.68), and
+          randomizing layer 9 — the intervention site itself — drops IIA further to 0.55.
+          DAS depends on both the learned representations at the intervention site and the
+          downstream layers that read them.
+        </p>
+        <p>
+          <strong style="color:var(--ink)">Layers 0–7 (steps 6–14):</strong> IIA plateaus
+          around 0.33–0.36, converging to the same floor as the fully random model. Once the
+          layers at and above the intervention site are destroyed, further randomization makes
+          no additional difference.
+        </p>
+        <div class="callout">
+          <p>This is the opposite of what Adebayo et al. found for Guided BackProp, which remained invariant to upper-layer randomization. DAS is genuinely sensitive to learned parameters in a graded, layer-localized way.</p>
+        </div>
 
-      <h2>Discussion</h2>
-      <p>DAS passes all three sanity checks cleanly:</p>
-      <ol>
-        <li><strong>Model randomization:</strong> IIA ≈ 0.39 on a random network (below chance). DAS requires learned weights.</li>
-        <li><strong>Cascading randomization:</strong> IIA degrades monotonically as layers are destroyed, with the sharpest drops at the intervention site and immediately downstream layers. DAS is parameter-sensitive in a graded, localized way.</li>
-        <li><strong>Causal model specificity:</strong> IIA ≈ 0.50 for wrong causal models. DAS discriminates between correct and incorrect causal structures.</li>
-      </ol>
-      <p>
-        These results stand in interesting contrast to recent findings on other interpretability methods.
-        Adebayo et al. (2018) showed that Guided BackProp is invariant to model parameters. More
-        recently, a <a href="https://arxiv.org/abs/2602.14111">February 2026 paper</a> applied similar
-        sanity checks to Sparse Autoencoders (SAEs) and found that frozen baselines, where encoder or
-        decoder weights are randomly initialized and never trained, match fully-trained SAEs on standard
-        evaluation metrics including interpretability scores, sparse probing, and causal editing. The
-        authors conclude that current SAE evaluation metrics are too weak to distinguish genuine feature
-        learning from exploitation of random structure.
-      </p>
-      <p>
-        DAS does not have this problem. Its theoretical grounding in causal abstraction provides a
-        built-in specificity test: interchange interventions create counterfactuals that must match a
-        <em>specific</em> causal model, not just look interpretable. The rotation matrix is constrained
-        to be orthogonal (preserving distances) and is the only learned component; the neural network is
-        frozen. These constraints appear to be sufficient to prevent the kind of spurious alignment that
-        afflicts less structured approaches.
-      </p>
-      <p>
-        That said, the tests presented here are clearly not conclusive I only tested obviously wrong causal
-        models, for instance. A stronger test might involve more plausible but wrong models. I leave this for future work.
-      </p>
+        <h2 id="test3">Test 3: Causal Model Specificity — Passed</h2>
+        <p>
+          <strong style="color:var(--ink)">Question:</strong> Does DAS discriminate between the
+          correct causal model and incorrect ones?
+        </p>
+        <p>
+          I tested three conditions, all using the same trained BERT model with the same DAS
+          hyperparameters:
+        </p>
+        <ol>
+          <li><strong style="color:var(--ink)">Correct model:</strong> The standard "Negation + Lexical Entailment" causal model from the paper.</li>
+          <li><strong style="color:var(--ink)">Shuffled counterfactual labels:</strong> Same base-source pairs and intervention structure, but the gold counterfactual labels are randomly permuted.</li>
+          <li><strong style="color:var(--ink)">Random binary variables:</strong> Two random binary labels per example (independent of input content), with IIT data constructed from these fake variables.</li>
+        </ol>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Condition</th><th>IIA</th><th>DAS Loss</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Correct model</strong></td><td><em>0.952</em></td><td>77.4</td></tr>
+              <tr><td>Shuffled labels</td><td>0.507</td><td>679.7</td></tr>
+              <tr><td>Random binary variables</td><td>0.503</td><td>2372.5</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <p>DAS achieves high IIA only for the correct causal model. Both wrong models land exactly at chance. The rotation matrix is not a powerful enough optimizer to overfit arbitrary counterfactual mappings.</p>
+        </div>
 
-      <h2>Acknowledgments</h2>
-      <p>
-        This experiment was conducted on Google Colab (L4 GPU). The codebase is adapted from
-        <a href="https://github.com/atticusg/InterchangeInterventions/tree/zen">Geiger et al.'s original implementation</a>.
-        All code is available at <a href="https://github.com/shengweiming/DASExperiment">github.com/shengweiming/DASExperiment</a>.
-      </p>
+        <h2 id="discussion">Discussion</h2>
+        <p>DAS passes all three sanity checks cleanly:</p>
+        <div class="result-grid">
+          <div class="result-cell">
+            <div class="result-num">Test 01</div>
+            <div class="result-label">Model Randomization</div>
+            <div class="result-val">IIA ≈ 0.39 on random network (below chance). DAS requires learned weights.</div>
+          </div>
+          <div class="result-cell">
+            <div class="result-num">Test 02</div>
+            <div class="result-label">Cascading Randomization</div>
+            <div class="result-val">IIA degrades monotonically; sharpest drops at intervention site and downstream layers.</div>
+          </div>
+          <div class="result-cell">
+            <div class="result-num">Test 03</div>
+            <div class="result-label">Causal Specificity</div>
+            <div class="result-val">IIA ≈ 0.50 for wrong causal models. DAS discriminates correct structure.</div>
+          </div>
+        </div>
+        <p>
+          These results stand in interesting contrast to recent findings on other interpretability
+          methods. Adebayo et al. (2018) showed that Guided BackProp is invariant to model
+          parameters. More recently, a <a href="https://arxiv.org/abs/2602.14111" target="_blank" rel="noopener noreferrer">February 2026 paper</a>
+          applied similar sanity checks to Sparse Autoencoders (SAEs) and found that frozen
+          baselines, where encoder or decoder weights are randomly initialized and never trained,
+          match fully-trained SAEs on standard evaluation metrics including interpretability
+          scores, sparse probing, and causal editing. The authors conclude that current SAE
+          evaluation metrics are too weak to distinguish genuine feature learning from
+          exploitation of random structure.
+        </p>
+        <p>
+          DAS does not have this problem. Its theoretical grounding in causal abstraction
+          provides a built-in specificity test: interchange interventions create counterfactuals
+          that must match a <em>specific</em> causal model, not just look interpretable. The
+          rotation matrix is constrained to be orthogonal (preserving distances) and is the only
+          learned component; the neural network is frozen. These constraints appear to be
+          sufficient to prevent the kind of spurious alignment that afflicts less structured
+          approaches.
+        </p>
+        <p>
+          That said, the tests presented here are clearly not conclusive — I only tested obviously
+          wrong causal models, for instance. A stronger test might involve more plausible but wrong
+          models. I leave this for future work.
+        </p>
 
-      <div class="references">
-        <h2>References</h2>
-        <ul>
-          <li>Adebayo, J., Gilmer, J., Muelly, M., Goodfellow, I., Hardt, M., &amp; Kim, B. (2018). Sanity checks for saliency maps. <em>NeurIPS 2018</em>.</li>
-          <li>Geiger, A., Wu, Z., Potts, C., Icard, T., &amp; Goodman, N. D. (2024). Finding alignments between interpretable causal variables and distributed neural representations. <em>Proceedings of Machine Learning Research</em>, 236, 160–187.</li>
-          <li>Geiger, A., Richardson, K., &amp; Potts, C. (2020). Neural natural language inference models partially embed theories of lexical entailment and negation. <em>BlackboxNLP 2020</em>.</li>
-          <li>Hewitt, J., &amp; Liang, P. (2019). Designing and interpreting probes with control tasks. <em>EMNLP-IJCNLP 2019</em>.</li>
-        </ul>
-      </div>
-    </article>
+        <div class="ack">
+          <strong>Acknowledgments.</strong> This experiment was conducted on Google Colab (L4 GPU).
+          The codebase is adapted from <a href="https://github.com/atticusg/InterchangeInterventions/tree/zen" target="_blank" rel="noopener noreferrer">Geiger et al.'s original implementation</a>.
+          All code is available at <a href="https://github.com/shengweiming/DASExperiment" target="_blank" rel="noopener noreferrer">github.com/shengweiming/DASExperiment</a>.
+        </div>
+
+        <div class="references" id="references">
+          <div class="references-label">References</div>
+          <div class="ref-item">
+            Adebayo, J., Gilmer, J., Muelly, M., Goodfellow, I., Hardt, M., &amp; Kim, B. (2018).
+            Sanity checks for saliency maps. <em>NeurIPS 2018</em>.
+          </div>
+          <div class="ref-item">
+            Geiger, A., Wu, Z., Potts, C., Icard, T., &amp; Goodman, N. D. (2024).
+            Finding alignments between interpretable causal variables and distributed neural
+            representations. <em>Proceedings of Machine Learning Research</em>, 236, 160–187.
+          </div>
+          <div class="ref-item">
+            Geiger, A., Richardson, K., &amp; Potts, C. (2020).
+            Neural natural language inference models partially embed theories of lexical
+            entailment and negation. <em>BlackboxNLP 2020</em>.
+          </div>
+          <div class="ref-item">
+            Hewitt, J., &amp; Liang, P. (2019).
+            Designing and interpreting probes with control tasks. <em>EMNLP-IJCNLP 2019</em>.
+          </div>
+        </div>
+      </article>
+    </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-  <script>
-    const textColor = '#2C2C2A';
-    const gridColor = 'rgba(0,0,0,0.06)';
-
-    new Chart(document.getElementById('randChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Trained (256d)', 'Random (64d)', 'Random (128d)', 'Random (256d)'],
-        datasets: [{
-          data: [0.952, 0.360, 0.385, 0.393],
-          backgroundColor: ['#534AB7', '#D85A30', '#D85A30', '#D85A30'],
-          borderColor: ['#3C3489', '#993C1D', '#993C1D', '#993C1D'],
-          borderWidth: 1,
-          barThickness: 52,
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            min: 0, max: 1.05,
-            ticks: { color: textColor, font: { size: 12 }, callback: v => v.toFixed(1) },
-            grid: { color: gridColor }
-          },
-          x: {
-            ticks: { color: textColor, font: { size: 12 } },
-            grid: { display: false }
-          }
-        },
-        plugins: { legend: { display: false } }
-      }
-    });
-
-    const labels = ['None','Cls','+ L11','+ L10','+ L9','+ L8','+ L7','+ L6','+ L5','+ L4','+ L3','+ L2','+ L1','+ L0','+ Emb'];
-    const iia = [0.952,0.947,0.682,0.699,0.551,0.517,0.350,0.328,0.340,0.328,0.364,0.416,0.342,0.336,0.339];
-    const taskF1 = [0.999,0.760,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333,0.333];
-    new Chart(document.getElementById('progChart'), {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'IIA',
-            data: iia,
-            borderColor: '#534AB7',
-            backgroundColor: '#534AB7',
-            borderWidth: 2.5,
-            pointRadius: 4,
-            pointBackgroundColor: '#534AB7',
-            tension: 0.25
-          },
-          {
-            label: 'Task F1',
-            data: taskF1,
-            borderColor: '#1D9E75',
-            backgroundColor: '#1D9E75',
-            borderWidth: 2,
-            pointRadius: 3,
-            pointBackgroundColor: '#1D9E75',
-            borderDash: [6,3],
-            tension: 0.25
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            min: 0, max: 1.05,
-            ticks: { color: textColor, font: { size: 12 }, callback: v => v.toFixed(1) },
-            grid: { color: gridColor }
-          },
-          x: {
-            ticks: { color: textColor, font: { size: 11 }, maxRotation: 45, autoSkip: false },
-            grid: { display: false }
-          }
-        },
-        plugins: {
-          legend: {
-            display: true,
-            labels: { color: textColor, font: { size: 12 } }
-          }
-        }
-      }
-    });
-
-    new Chart(document.getElementById('specChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Correct model', 'Shuffled labels', 'Random binary variables'],
-        datasets: [{
-          data: [0.952, 0.507, 0.503],
-          backgroundColor: ['#534AB7', '#B4B2A9', '#B4B2A9'],
-          borderColor: ['#3C3489', '#888780', '#888780'],
-          borderWidth: 1,
-          barThickness: 64,
-          borderRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        indexAxis: 'y',
-        scales: {
-          x: {
-            min: 0, max: 1.0,
-            ticks: { color: textColor, font: { size: 12 }, callback: v => v.toFixed(1) },
-            grid: { color: gridColor }
-          },
-          y: {
-            ticks: { color: textColor, font: { size: 12 } },
-            grid: { display: false }
-          }
-        },
-        plugins: { legend: { display: false } }
-      }
-    });
-  </script>
+</div>
 </body>
 </html>
