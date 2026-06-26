@@ -264,7 +264,22 @@
       font-weight: 300;
       color: #3A3028;
       text-wrap: pretty;
+      margin-bottom: 32px;
     }
+
+    .about-cv-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--terra);
+      transition: opacity 0.15s;
+    }
+
+    .about-cv-link:hover { opacity: 0.7; }
 
     /* ── PUBLICATIONS ── */
     .pub-row {
@@ -509,6 +524,9 @@
             I do philosophy of AI: I try to work on problems in AI that might be interesting
             to philosophers, and problems in philosophy that might be interesting to AI researchers.
           </p>
+          <a class="about-cv-link" href="WeimingSheng_CV.pdf" target="_blank" rel="noopener noreferrer">
+            Curriculum Vitae →
+          </a>
         </section>
 
         <!-- Publications -->
