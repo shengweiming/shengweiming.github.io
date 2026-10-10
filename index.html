@@ -7,637 +7,493 @@
   <meta name="description" content="Weiming Sheng — PhD student at Columbia working on philosophy of AI." />
   <meta property="og:title" content="Weiming Sheng" />
   <meta property="og:description" content="PhD student at Columbia working on philosophy of AI." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" crossorigin />
   <style>
+    /* Latin Modern (the OpenType successor to Computer Modern), via the latex.css package */
+    @font-face {
+      font-family: 'Latin Modern';
+      font-style: normal;
+      font-weight: normal;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/npm/latex.css@1.10.0/fonts/LM-regular.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/npm/latex.css@1.10.0/fonts/LM-regular.woff') format('woff');
+    }
+    @font-face {
+      font-family: 'Latin Modern';
+      font-style: italic;
+      font-weight: normal;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/npm/latex.css@1.10.0/fonts/LM-italic.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/npm/latex.css@1.10.0/fonts/LM-italic.woff') format('woff');
+    }
+    @font-face {
+      font-family: 'Latin Modern';
+      font-style: normal;
+      font-weight: bold;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/npm/latex.css@1.10.0/fonts/LM-bold.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/npm/latex.css@1.10.0/fonts/LM-bold.woff') format('woff');
+    }
+    @font-face {
+      font-family: 'Latin Modern';
+      font-style: italic;
+      font-weight: bold;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/npm/latex.css@1.10.0/fonts/LM-bold-italic.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/npm/latex.css@1.10.0/fonts/LM-bold-italic.woff') format('woff');
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --cream: #F5F0E8;
-      --ink: #1C1712;
-      --muted: #7A6E62;
-      --rule: #EBE4D8;
-      --terra: oklch(52% 0.09 45);
-      --terra-bg: oklch(88% 0.05 45);
-      --sidebar-w: 260px;
+      --desk: #E6E4DF;
+      --paper: #FFFFFF;
+      --ink: #111111;
+      --muted: #555555;
+      --link: #00008B;        /* hyperref "darkblue" */
+      --cite: #006400;        /* hyperref "citecolor=darkgreen" */
+      --serif: 'Latin Modern', 'Latin Modern Roman', 'CMU Serif', 'Computer Modern Serif', Georgia, 'Times New Roman', serif;
+      --mono: 'Latin Modern Mono', 'CMU Typewriter Text', 'Courier New', monospace;
     }
 
-    html { background: var(--cream); min-height: 100%; }
+    html { background: var(--desk); }
 
     body {
-      font-family: 'IBM Plex Mono', monospace;
-      background: var(--cream);
+      font-family: var(--serif);
+      font-size: 17px;
+      line-height: 1.45;
       color: var(--ink);
-      min-height: 100vh;
+      background: var(--desk);
+      padding: 48px 16px 64px;
+      -webkit-font-smoothing: antialiased;
+      font-kerning: normal;
+      font-variant-ligatures: common-ligatures;
     }
 
-    a { text-decoration: none; color: inherit; }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    @keyframes pageFadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    .tt { font-family: var(--mono); font-size: 0.95em; }
+    .sc { font-variant: small-caps; }
 
-    .site-wrapper {
-      display: flex;
-      min-height: 100vh;
-      animation: pageFadeIn 0.5s ease both;
-    }
-
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--sidebar-w);
-      min-width: var(--sidebar-w);
-      border-right: 1px solid var(--ink);
-      padding: 52px 36px 52px 48px;
+    /* ── PAGES ── */
+    .page {
+      position: relative;
+      background: var(--paper);
+      width: 100%;
+      max-width: 816px;                 /* 8.5in at 96dpi */
+      min-height: 1056px;               /* 11in */
+      margin: 0 auto 40px;
+      padding: 96px 104px 112px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.08);
+      text-align: justify;
+      hyphens: auto;
       display: flex;
       flex-direction: column;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      flex-shrink: 0;
     }
 
-    .sidebar-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-size: 32px;
-      letter-spacing: 0.01em;
-      line-height: 1.1;
-      color: var(--terra);
+    .page-number {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 48px;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .running-head {
+      position: absolute;
+      top: 48px;
+      left: 104px; right: 104px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-style: italic;
+      color: var(--muted);
+      padding-bottom: 4px;
+      border-bottom: 0.5px solid var(--ink);
+    }
+
+    /* arXiv-style margin stamp on the first page */
+    .margin-stamp {
+      position: absolute;
+      left: 34px;
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+      transform-origin: center;
+      white-space: nowrap;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      color: #9A9A9A;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ── TITLE BLOCK (\maketitle) ── */
+    .title {
+      text-align: center;
+      font-size: 30px;
+      font-weight: normal;
+      line-height: 1.2;
+      margin: 8px 0 26px;
+    }
+
+    .authors {
+      text-align: center;
+      font-size: 19px;
       margin-bottom: 6px;
     }
 
-    .sidebar-tagline {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 40px;
+    .affil {
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.35;
+      margin-bottom: 4px;
     }
 
-    .sidebar-photo-wrap {
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      background: #D8CFBF;
-      margin-bottom: 40px;
-      overflow: hidden;
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .sidebar-photo-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: grayscale(15%);
-    }
-
-    .sidebar-photo-accent {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--terra);
-    }
-
-    /* ── SIDEBAR NAV ── */
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: auto;
-    }
-
-    .nav-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 11px 0;
-      border-bottom: 1px solid var(--rule);
-      font-size: 9px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--ink);
-      font-weight: 400;
-      cursor: pointer;
-      transition: color 0.15s;
-    }
-
-    .nav-item.active {
-      color: var(--terra);
-      font-weight: 500;
-    }
-
-    .nav-item:hover { color: var(--terra); }
-
-    .nav-item-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-item-num {
-      font-size: 8px;
-      color: var(--muted);
-      font-weight: 300;
-    }
-
-    .nav-item-arrow {
-      font-size: 9px;
-      opacity: 0.3;
-      transition: opacity 0.15s;
-    }
-
-    .nav-item.active .nav-item-arrow { opacity: 1; }
-
-    /* ── SIDEBAR CONTACT FOOTER ── */
-    .sidebar-contact {
-      padding-top: 24px;
-      border-top: 1px solid var(--rule);
-      margin-top: 24px;
-    }
-
-    .sidebar-contact-label {
-      font-size: 8px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .sidebar-contact a {
-      display: block;
-      font-size: 10px;
-      color: var(--ink);
-      margin-bottom: 5px;
-      transition: color 0.15s;
-    }
-
-    .sidebar-contact a:last-child { margin-bottom: 0; }
-    .sidebar-contact a:hover { color: var(--terra); }
-
-    /* ── MAIN ── */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .top-strip {
-      border-bottom: 1px solid var(--ink);
-      padding: 0 56px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-
-    .top-strip-label {
-      font-size: 9px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .top-strip-year {
-      font-size: 9px;
-      color: var(--muted);
-    }
-
-    /* ── CONTENT ── */
-    .content-area {
-      padding: 56px 56px 80px;
-      flex: 1;
-    }
-
-    .tab-panel {
-      display: none;
-      max-width: 680px;
-      animation: pageFadeIn 0.35s ease both;
-    }
-
-    .tab-panel.active { display: block; }
-
-    /* ── SECTION LABEL ── */
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      font-size: 8px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 32px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--rule);
-    }
-
-    .section-label-rule {
-      flex: 1;
-      height: 1px;
-      background: var(--rule);
-      display: inline-block;
-    }
-
-    /* ── ABOUT ── */
-    #panel-about { max-width: 640px; }
-
-    .about-lead {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px;
-      line-height: 1.8;
-      font-weight: 300;
-      color: var(--ink);
-      margin-bottom: 36px;
-      text-wrap: pretty;
-    }
-
-    .about-body {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px;
-      line-height: 1.85;
-      font-weight: 300;
-      color: #3A3028;
-      text-wrap: pretty;
-      margin-bottom: 32px;
-    }
-
-    .about-body a {
-      color: var(--terra);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      transition: opacity 0.15s;
-    }
-
-    .about-body a:hover { opacity: 0.7; }
-
-    .about-cv-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--terra);
-      transition: opacity 0.15s;
-    }
-
-    .about-cv-link:hover { opacity: 0.7; }
-
-    /* ── PUBLICATIONS ── */
-    .pub-row {
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      gap: 20px;
-      padding: 28px 0;
-      border-bottom: 1px solid var(--rule);
-      align-items: start;
-    }
-
-    .pub-row:first-of-type { padding-top: 0; }
-
-    .pub-index {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      color: var(--muted);
-      padding-top: 3px;
-    }
-
-    .pub-meta {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-
-    .pub-type {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 8px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--terra);
-      background: var(--terra-bg);
-      padding: 3px 9px;
-    }
-
-    .pub-year {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 8px;
-      color: var(--muted);
-    }
-
-    .pub-title {
-      font-family: 'Cormorant Garamond', serif;
+    .date {
+      text-align: center;
       font-size: 19px;
-      font-weight: 400;
+      margin: 18px 0 34px;
+    }
+
+    sup.fn { font-size: 0.65em; line-height: 0; }
+    sup.fn a { color: var(--link); }
+
+    /* ── ABSTRACT ── */
+    .abstract {
+      margin: 0 auto 34px;
+      max-width: 520px;
+      font-size: 15px;
       line-height: 1.4;
-      color: var(--ink);
-      display: block;
-      margin-bottom: 10px;
-      transition: color 0.15s;
     }
 
-    .pub-title:hover { color: var(--terra); }
-
-    .pub-desc {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      line-height: 1.7;
-      color: var(--muted);
+    .abstract-title {
+      text-align: center;
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 6px;
     }
 
-    /* ── BLOG ── */
-    .blog-row {
-      display: grid;
-      grid-template-columns: 88px 1fr;
-      gap: 24px;
-      padding: 28px 0;
-      border-bottom: 1px solid var(--rule);
-      align-items: start;
+    .abstract p { text-indent: 1.5em; }
+    .abstract p:first-of-type { text-indent: 0; }
+
+    /* ── TABLE OF CONTENTS ── */
+    .toc-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 14px;
     }
 
-    .blog-row:first-of-type { padding-top: 0; }
+    .toc { list-style: none; margin-bottom: 34px; }
 
-    .blog-date {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      color: var(--muted);
-      line-height: 1.6;
-      padding-top: 3px;
-    }
-
-    .blog-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 19px;
-      font-weight: 400;
-      line-height: 1.4;
-      color: var(--ink);
-      display: block;
-      margin-bottom: 10px;
-      transition: color 0.15s;
-    }
-
-    .blog-title:hover { color: var(--terra); }
-
-    .blog-desc {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-
-    /* ── CONTACT ── */
-    #panel-contact { max-width: 560px; }
-
-    .contact-row {
-      display: grid;
-      grid-template-columns: 80px 1fr;
-      gap: 24px;
-      padding: 22px 0;
-      border-bottom: 1px solid var(--rule);
+    .toc li {
+      display: flex;
       align-items: baseline;
+      margin-bottom: 4px;
     }
 
-    .contact-row:first-of-type { padding-top: 0; }
+    .toc li.toc-section { font-weight: bold; margin-top: 10px; }
+    .toc li.toc-section:first-child { margin-top: 0; }
+    .toc li.toc-sub { padding-left: 1.6em; }
 
-    .contact-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 8px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
+    .toc .toc-num { display: inline-block; min-width: 1.6em; }
+    .toc li.toc-sub .toc-num { min-width: 2.4em; }
+
+    .toc a { color: var(--ink); }
+    .toc a:hover { color: var(--link); text-decoration: none; }
+
+    .toc .toc-text { flex: 0 1 auto; text-align: left; }
+
+    .toc .leader {
+      flex: 1 1 auto;
+      margin: 0 6px;
+      border-bottom: 2px dotted #444;
+      transform: translateY(-4px);
+      min-width: 24px;
+    }
+    .toc li.toc-section .leader { border-bottom-color: transparent; }
+
+    .toc .toc-page { flex: 0 0 auto; min-width: 1em; text-align: right; }
+
+    /* ── FIGURE ── */
+    figure {
+      margin: 8px auto 0;
+      text-align: center;
+      break-inside: avoid;
     }
 
-    .contact-value {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px;
-      font-weight: 300;
-      color: var(--ink);
-      transition: color 0.15s;
+    .fbox {
+      display: inline-block;
+      border: 0.8px solid var(--ink);
+      padding: 6px;
+      background: var(--paper);
     }
 
-    .contact-value:hover { color: var(--terra); }
+    .fbox img {
+      display: block;
+      width: 240px;
+      height: auto;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+    }
 
-    /* ── UNDERLINE HOVER ── */
-    .ul-hover { position: relative; display: inline; }
-    .ul-hover::after {
+    figcaption {
+      max-width: 460px;
+      margin: 12px auto 0;
+      font-size: 15px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .caption-label { font-weight: bold; }
+
+    /* ── SECTIONS ── */
+    h2.section {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 34px 0 12px;
+      scroll-margin-top: 24px;
+    }
+    h2.section:first-child,
+    .running-head + h2.section { margin-top: 0; }
+
+    h3.subsection {
+      font-size: 19px;
+      font-weight: bold;
+      margin: 22px 0 8px;
+      line-height: 1.3;
+      text-align: left;
+      scroll-margin-top: 24px;
+    }
+
+    .secnum { display: inline-block; min-width: 1.4em; margin-right: 0.35em; }
+    h3 .secnum { min-width: 2.2em; }
+
+    h3.subsection a { color: var(--ink); }
+    h3.subsection a:hover { color: var(--link); text-decoration: none; }
+
+    p { margin: 0; }
+    p + p { text-indent: 1.5em; }
+    .noindent { text-indent: 0 !important; }
+
+    .paragraph-head { font-weight: bold; margin-right: 0.6em; }
+
+    .cite { color: var(--cite); }
+
+    /* venue line under a publication */
+    .venue {
+      font-style: italic;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+
+    /* description list for contact */
+    dl.contact {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      column-gap: 18px;
+      row-gap: 4px;
+      margin: 10px 0 0 1.5em;
+      text-align: left;
+    }
+    dl.contact dt { font-weight: bold; }
+
+    /* ── REFERENCES ── */
+    .refs { list-style: none; font-size: 15px; text-align: left; }
+    .refs li {
+      display: grid;
+      grid-template-columns: 2.2em 1fr;
+      margin-bottom: 8px;
+    }
+
+    /* ── FOOTNOTES ── */
+    .footnotes {
+      margin-top: auto;
+      padding-top: 28px;
+      font-size: 13px;
+      line-height: 1.35;
+      text-align: left;
+    }
+    .footnotes::before {
       content: '';
-      position: absolute;
-      left: 0; bottom: -1px;
-      width: 0; height: 1px;
-      background: currentColor;
-      transition: width 0.2s ease;
+      display: block;
+      width: 34%;
+      border-top: 0.5px solid var(--ink);
+      margin-bottom: 6px;
     }
-    .ul-hover:hover::after { width: 100%; }
+    .footnotes p { text-indent: 0; margin-bottom: 2px; }
+    .footnotes sup { font-size: 0.75em; margin-right: 2px; }
+
+    .qed { float: right; }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 760px) {
-      .site-wrapper { flex-direction: column; }
-
-      .sidebar {
-        width: 100%;
-        min-width: 0;
-        position: static;
-        height: auto;
-        padding: 36px 24px 28px;
-        border-right: none;
-        border-bottom: 1px solid var(--ink);
+    @media (max-width: 860px) {
+      body { padding: 16px 0 32px; font-size: 16px; }
+      .page {
+        min-height: 0;
+        margin-bottom: 16px;
+        padding: 72px 28px 96px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
       }
+      .running-head { left: 28px; right: 28px; top: 28px; font-size: 13px; }
+      .margin-stamp { display: none; }
+      .title { font-size: 25px; }
+      .page-number { bottom: 28px; }
+      .fbox img { width: 200px; }
+      .page { text-align: left; }
+    }
 
-      .sidebar-photo-wrap {
-        aspect-ratio: 3 / 2;
-        max-height: 240px;
-      }
-
-      .top-strip { padding: 0 24px; }
-      .content-area { padding: 36px 24px 60px; }
+    @media print {
+      html, body { background: #fff; padding: 0; }
+      .page { box-shadow: none; margin: 0; page-break-after: always; }
     }
   </style>
 </head>
 <body>
-  <div class="site-wrapper">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" aria-label="Profile and navigation">
-      <div class="sidebar-name">Weiming<br>Sheng</div>
-      <div class="sidebar-tagline">AI &amp; Philosophy</div>
+  <!-- ═══════════════ PAGE 1 ═══════════════ -->
+  <article class="page" id="page-1" aria-label="Page 1">
+    <div class="margin-stamp" aria-hidden="true">shengweiming.github.io &nbsp;[phil.AI] &nbsp;10 Oct 2026</div>
 
-      <div class="sidebar-photo-wrap">
-        <img src="0142.JPG" alt="Portrait of Weiming Sheng" />
-        <div class="sidebar-photo-accent"></div>
-      </div>
+    <h1 class="title">Website</h1>
 
-      <nav class="sidebar-nav" aria-label="Site sections">
-        <a class="nav-item active" data-tab="about" href="#about" onclick="switchTab(event, 'about')">
-          <span class="nav-item-left">
-            <span class="nav-item-num">01</span>
-            About
-          </span>
-          <span class="nav-item-arrow">→</span>
-        </a>
-        <a class="nav-item" data-tab="publications" href="#publications" onclick="switchTab(event, 'publications')">
-          <span class="nav-item-left">
-            <span class="nav-item-num">02</span>
-            Publications
-          </span>
-          <span class="nav-item-arrow">→</span>
-        </a>
-        <a class="nav-item" data-tab="blog" href="#blog" onclick="switchTab(event, 'blog')">
-          <span class="nav-item-left">
-            <span class="nav-item-num">03</span>
-            Blog
-          </span>
-          <span class="nav-item-arrow">→</span>
-        </a>
-        <a class="nav-item" data-tab="contact" href="#contact" onclick="switchTab(event, 'contact')">
-          <span class="nav-item-left">
-            <span class="nav-item-num">04</span>
-            Contact
-          </span>
-          <span class="nav-item-arrow">→</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-contact">
-        <div class="sidebar-contact-label">Contact</div>
-        <a href="mailto:ws2720@columbia.edu">ws2720@columbia.edu</a>
-        <a href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">github / shengweiming</a>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <div class="main">
-      <div class="top-strip">
-        <span class="top-strip-label">Personal Research Site</span>
-        <span class="top-strip-year">2026</span>
-      </div>
-
-      <main class="content-area" id="main-content">
-
-        <!-- About -->
-        <section class="tab-panel active" id="panel-about" aria-label="About">
-          <div class="section-label">
-            <span>01</span>
-            <span class="section-label-rule"></span>
-            <span>About</span>
-          </div>
-          <p class="about-lead">Hi! I'm Wei.<br>I'm a PhD student at Columbia.</p>
-          <p class="about-body">
-            I do philosophy of AI. I am fortunate to be advised by
-            <a href="https://www.columbia.edu/~jrm2182/" target="_blank" rel="noopener noreferrer">John Morrison</a>.
-            This summer I am working on a project on agentic moral alignment with
-            <a href="https://liza-tennant.github.io/" target="_blank" rel="noopener noreferrer">Elizaveta Tennant</a>.
-          </p>
-          <a class="about-cv-link" href="WeimingSheng_CV.pdf" target="_blank" rel="noopener noreferrer">
-            Curriculum Vitae →
-          </a>
-        </section>
-
-        <!-- Publications -->
-        <section class="tab-panel" id="panel-publications" aria-label="Publications">
-          <div class="section-label">
-            <span>02</span>
-            <span class="section-label-rule"></span>
-            <span>Publications</span>
-          </div>
-
-          <div class="pub-row">
-            <span class="pub-index">01</span>
-            <div>
-              <div class="pub-meta">
-                <span class="pub-type">ICML workshop · Poster</span>
-                <span class="pub-year">2026</span>
-              </div>
-              <a class="pub-title" href="papers/FaP-ICML-2026.pdf" target="_blank" rel="noopener noreferrer">
-                <span class="ul-hover">Fictionalism about Personas: Folk Psychology as an Interpretability Strategy</span>
-              </a>
-              <p class="pub-desc">
-                A fictionalist account of LLM mentality.
-              </p>
-            </div>
-          </div>
-
-          <div class="pub-row">
-            <span class="pub-index">02</span>
-            <div>
-              <div class="pub-meta">
-                <span class="pub-type">VLDB workshop</span>
-                <span class="pub-year">2026</span>
-              </div>
-              <a class="pub-title" href="https://arxiv.org/abs/2602.02335" target="_blank" rel="noopener noreferrer">
-                <span class="ul-hover">Building a Correct-by-Design Lakehouse for Humans and Agents</span>
-              </a>
-              <p class="pub-desc">
-                We show how typed table contracts, Git-like data versioning, and transactional pipeline
-                execution can make illegal states unrepresentable and avoid partial effects.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Blog -->
-        <section class="tab-panel" id="panel-blog" aria-label="Blog">
-          <div class="section-label">
-            <span>03</span>
-            <span class="section-label-rule"></span>
-            <span>Blog</span>
-          </div>
-
-          <div class="blog-row">
-            <div class="blog-date">Apr 2026</div>
-            <div>
-              <a class="blog-title" href="blog/sanity-checks-for-das.html">
-                <span class="ul-hover">Sanity Checks for Distributed Alignment Search</span>
-              </a>
-              <p class="blog-desc">
-                DAS is one of the more promising methods in the causal interpretability toolkit.
-                I ran three randomization-based sanity checks on the MoNLI experiment.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Contact -->
-        <section class="tab-panel" id="panel-contact" aria-label="Contact">
-          <div class="section-label">
-            <span>04</span>
-            <span class="section-label-rule"></span>
-            <span>Contact</span>
-          </div>
-
-          <div class="contact-row">
-            <span class="contact-label">Email</span>
-            <a class="contact-value" href="mailto:ws2720@columbia.edu">
-              <span class="ul-hover">ws2720@columbia.edu</span>
-            </a>
-          </div>
-          <div class="contact-row">
-            <span class="contact-label">GitHub</span>
-            <a class="contact-value" href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">
-              <span class="ul-hover">github.com/shengweiming</span>
-            </a>
-          </div>
-        </section>
-
-      </main>
+    <div class="authors">
+      Weiming Sheng<sup class="fn"><a href="#fn1">*</a></sup>
     </div>
-  </div>
+    <div class="affil">Department of Philosophy<br />Columbia University</div>
+    <div class="affil"><a class="tt" href="mailto:ws2720@columbia.edu">ws2720@columbia.edu</a></div>
 
-  <script>
-    function switchTab(e, id) {
-      e.preventDefault();
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-      document.getElementById('panel-' + id).classList.add('active');
-    }
-  </script>
+    <div class="date">October 2026</div>
+
+    <section class="abstract" aria-label="Abstract">
+      <div class="abstract-title">Abstract</div>
+      <p>
+        This is my website. It contains my academic information&mdash;research, publications,
+        and writing&mdash;as well as some other information about me. I am a PhD student
+        working on the philosophy of artificial intelligence, with particular interest in
+        how we should interpret the apparent mental lives of language models. The remainder
+        of this document is organized as follows: Section&nbsp;<a href="#about">1</a> introduces
+        the author, Section&nbsp;<a href="#publications">2</a> surveys the author&rsquo;s publications,
+        Section&nbsp;<a href="#blog">3</a> collects informal writing, and
+        Section&nbsp;<a href="#contact">4</a> describes how to get in touch.
+      </p>
+    </section>
+
+    <h2 class="toc-title">Contents</h2>
+    <ol class="toc">
+      <li class="toc-section"><a class="toc-text" href="#about"><span class="toc-num">1</span>About</a><span class="leader"></span><span class="toc-page">2</span></li>
+      <li class="toc-section"><a class="toc-text" href="#publications"><span class="toc-num">2</span>Publications</a><span class="leader"></span><span class="toc-page">2</span></li>
+      <li class="toc-sub"><a class="toc-text" href="#pub-fap"><span class="toc-num">2.1</span>Fictionalism about Personas</a><span class="leader"></span><span class="toc-page">2</span></li>
+      <li class="toc-sub"><a class="toc-text" href="#pub-lakehouse"><span class="toc-num">2.2</span>A Correct-by-Design Lakehouse</a><span class="leader"></span><span class="toc-page">2</span></li>
+      <li class="toc-section"><a class="toc-text" href="#blog"><span class="toc-num">3</span>Blog</a><span class="leader"></span><span class="toc-page">3</span></li>
+      <li class="toc-section"><a class="toc-text" href="#contact"><span class="toc-num">4</span>Contact</a><span class="leader"></span><span class="toc-page">3</span></li>
+    </ol>
+
+    <figure id="fig-1">
+      <div class="fbox">
+        <img src="0142.JPG" alt="Portrait of Weiming Sheng" />
+      </div>
+      <figcaption>
+        <span class="caption-label">Figure 1:</span>
+        The person for whom this website is written.
+      </figcaption>
+    </figure>
+
+    <div class="footnotes">
+      <p id="fn1"><sup>*</sup>Who also goes by Wei. Curriculum vitae available at <a href="WeimingSheng_CV.pdf" target="_blank" rel="noopener noreferrer"><span class="tt">WeimingSheng_CV.pdf</span></a>.</p>
+    </div>
+
+    <div class="page-number">1</div>
+  </article>
+
+  <!-- ═══════════════ PAGE 2 ═══════════════ -->
+  <article class="page" id="page-2" aria-label="Page 2">
+    <div class="running-head" aria-hidden="true"><span>W. Sheng</span><span>Website</span></div>
+
+    <h2 class="section" id="about"><span class="secnum">1</span>About</h2>
+    <p>
+      Hi! I&rsquo;m Wei. I&rsquo;m a PhD student at Columbia, where I do philosophy of AI.
+      I am fortunate to be advised by
+      <a href="https://www.columbia.edu/~jrm2182/" target="_blank" rel="noopener noreferrer">John Morrison</a>.
+      This summer I am working on a project on agentic moral alignment with
+      <a href="https://liza-tennant.github.io/" target="_blank" rel="noopener noreferrer">Elizaveta Tennant</a>.
+      A photograph of the author appears in Figure&nbsp;<a href="#fig-1">1</a>; a more complete
+      record appears in the
+      <a href="WeimingSheng_CV.pdf" target="_blank" rel="noopener noreferrer">curriculum vitae</a>.
+    </p>
+
+    <h2 class="section" id="publications"><span class="secnum">2</span>Publications</h2>
+    <p>
+      This section lists the author&rsquo;s publications in reverse chronological order. Each
+      entry gives the venue followed by a brief summary; full citations are collected in the
+      References.
+    </p>
+
+    <h3 class="subsection" id="pub-fap">
+      <span class="secnum">2.1</span><a href="papers/FaP-ICML-2026.pdf" target="_blank" rel="noopener noreferrer">Fictionalism about Personas: Folk Psychology as an Interpretability Strategy</a>
+    </h3>
+    <p class="venue">ICML Workshop, 2026 &middot; Poster</p>
+    <p>
+      A fictionalist account of LLM mentality <span class="cite">[<a class="cite" href="#ref-1">1</a>]</span>.
+    </p>
+
+    <h3 class="subsection" id="pub-lakehouse">
+      <span class="secnum">2.2</span><a href="https://arxiv.org/abs/2602.02335" target="_blank" rel="noopener noreferrer">Building a Correct-by-Design Lakehouse for Humans and Agents</a>
+    </h3>
+    <p class="venue">VLDB Workshop, 2026</p>
+    <p>
+      We show how typed table contracts, Git-like data versioning, and transactional pipeline
+      execution can make illegal states unrepresentable and avoid partial effects
+      <span class="cite">[<a class="cite" href="#ref-2">2</a>]</span>.
+    </p>
+
+    <div class="page-number">2</div>
+  </article>
+
+  <!-- ═══════════════ PAGE 3 ═══════════════ -->
+  <article class="page" id="page-3" aria-label="Page 3">
+    <div class="running-head" aria-hidden="true"><span>W. Sheng</span><span>Website</span></div>
+
+    <h2 class="section" id="blog"><span class="secnum">3</span>Blog</h2>
+    <p>
+      Less formal writing, typically about experiments that did not need a full paper.
+    </p>
+
+    <h3 class="subsection" id="blog-das">
+      <span class="secnum">3.1</span><a href="blog/sanity-checks-for-das.html">Sanity Checks for Distributed Alignment Search</a>
+    </h3>
+    <p class="venue">April 2026</p>
+    <p>
+      DAS is one of the more promising methods in the causal interpretability toolkit.
+      I ran three randomization-based sanity checks on the MoNLI experiment.
+    </p>
+
+    <h2 class="section" id="contact"><span class="secnum">4</span>Contact</h2>
+    <p>
+      Correspondence concerning this website should be addressed to the author.
+    </p>
+    <dl class="contact">
+      <dt>Email</dt>
+      <dd><a class="tt" href="mailto:ws2720@columbia.edu">ws2720@columbia.edu</a></dd>
+      <dt>GitHub</dt>
+      <dd><a class="tt" href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">github.com/shengweiming</a></dd>
+    </dl>
+
+    <h2 class="section" id="references">References</h2>
+    <ol class="refs">
+      <li id="ref-1">
+        <span>[1]</span>
+        <span>W. Sheng. Fictionalism about personas: Folk psychology as an interpretability strategy.
+        In <i>ICML Workshop</i>, 2026. <a href="papers/FaP-ICML-2026.pdf" target="_blank" rel="noopener noreferrer">[pdf]</a></span>
+      </li>
+      <li id="ref-2">
+        <span>[2]</span>
+        <span>Building a correct-by-design lakehouse for humans and agents.
+        In <i>VLDB Workshop</i>, 2026. <a class="tt" href="https://arxiv.org/abs/2602.02335" target="_blank" rel="noopener noreferrer">arXiv:2602.02335</a>.</span>
+      </li>
+    </ol>
+
+    <div class="page-number">3</div>
+  </article>
+
 </body>
 </html>
