@@ -5,639 +5,142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Weiming Sheng</title>
   <meta name="description" content="Weiming Sheng — PhD student at Columbia working on philosophy of AI." />
-  <meta property="og:title" content="Weiming Sheng" />
-  <meta property="og:description" content="PhD student at Columbia working on philosophy of AI." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --cream: #F5F0E8;
-      --ink: #1C1712;
-      --muted: #7A6E62;
-      --rule: #EBE4D8;
-      --terra: oklch(52% 0.09 45);
-      --terra-bg: oklch(88% 0.05 45);
-      --sidebar-w: 260px;
+      --bg: #FCFBF8;
+      --ink: #1A1A1A;
+      --muted: #8A8580;
+      --rule: #E7E3DC;
     }
 
-    html { background: var(--cream); min-height: 100%; }
+    html { background: var(--bg); }
 
     body {
-      font-family: 'IBM Plex Mono', monospace;
-      background: var(--cream);
+      font-family: 'EB Garamond', Garamond, Georgia, serif;
+      font-size: 19px;
+      line-height: 1.6;
       color: var(--ink);
-      min-height: 100vh;
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
     }
 
-    a { text-decoration: none; color: inherit; }
+    a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--rule); transition: border-color .2s; }
+    a:hover { border-color: var(--ink); }
 
-    @keyframes pageFadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
+    main {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 120px 24px 120px;
     }
 
-    .site-wrapper {
-      display: flex;
-      min-height: 100vh;
-      animation: pageFadeIn 0.5s ease both;
-    }
+    figure { margin: 0 0 40px; }
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--sidebar-w);
-      min-width: var(--sidebar-w);
-      border-right: 1px solid var(--ink);
-      padding: 52px 36px 52px 48px;
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-      flex-shrink: 0;
-    }
-
-    .sidebar-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-size: 32px;
-      letter-spacing: 0.01em;
-      line-height: 1.1;
-      color: var(--terra);
-      margin-bottom: 6px;
-    }
-
-    .sidebar-tagline {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 40px;
-    }
-
-    .sidebar-photo-wrap {
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      background: #D8CFBF;
-      margin-bottom: 40px;
-      overflow: hidden;
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .sidebar-photo-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: grayscale(15%);
-    }
-
-    .sidebar-photo-accent {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--terra);
-    }
-
-    /* ── SIDEBAR NAV ── */
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: auto;
-    }
-
-    .nav-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 11px 0;
-      border-bottom: 1px solid var(--rule);
-      font-size: 9px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--ink);
-      font-weight: 400;
-      cursor: pointer;
-      transition: color 0.15s;
-    }
-
-    .nav-item.active {
-      color: var(--terra);
-      font-weight: 500;
-    }
-
-    .nav-item:hover { color: var(--terra); }
-
-    .nav-item-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-item-num {
-      font-size: 8px;
-      color: var(--muted);
-      font-weight: 300;
-    }
-
-    .nav-item-arrow {
-      font-size: 9px;
-      opacity: 0.3;
-      transition: opacity 0.15s;
-    }
-
-    .nav-item.active .nav-item-arrow { opacity: 1; }
-
-    /* ── SIDEBAR CONTACT FOOTER ── */
-    .sidebar-contact {
-      padding-top: 24px;
-      border-top: 1px solid var(--rule);
-      margin-top: 24px;
-    }
-
-    .sidebar-contact-label {
-      font-size: 8px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .sidebar-contact a {
+    figure img {
       display: block;
-      font-size: 10px;
-      color: var(--ink);
-      margin-bottom: 5px;
-      transition: color 0.15s;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
     }
 
-    .sidebar-contact a:last-child { margin-bottom: 0; }
-    .sidebar-contact a:hover { color: var(--terra); }
-
-    /* ── MAIN ── */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .top-strip {
-      border-bottom: 1px solid var(--ink);
-      padding: 0 56px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-
-    .top-strip-label {
-      font-size: 9px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
+    figcaption {
+      margin-top: 8px;
+      font-style: italic;
+      font-size: 15px;
       color: var(--muted);
     }
 
-    .top-strip-year {
-      font-size: 9px;
+    h1 {
+      font-weight: 500;
+      font-size: 19px;
+      letter-spacing: 0.01em;
+      margin-bottom: 28px;
+    }
+
+    .bio p + p { margin-top: 14px; }
+
+    section { margin-top: 72px; }
+
+    h2 {
+      font-weight: 400;
+      font-style: italic;
+      font-size: 19px;
       color: var(--muted);
+      margin-bottom: 20px;
     }
 
-    /* ── CONTENT ── */
-    .content-area {
-      padding: 56px 56px 80px;
-      flex: 1;
-    }
+    .item { margin-bottom: 24px; }
+    .item:last-child { margin-bottom: 0; }
+    .item a { border-bottom-color: transparent; }
+    .item a:hover { border-color: var(--ink); }
+    .meta { color: var(--muted); font-size: 16px; margin-top: 2px; }
+    .desc { font-size: 17px; color: #4A4744; margin-top: 4px; }
 
-    .tab-panel {
-      display: none;
-      max-width: 680px;
-      animation: pageFadeIn 0.35s ease both;
-    }
-
-    .tab-panel.active { display: block; }
-
-    /* ── SECTION LABEL ── */
-    .section-label {
+    footer {
+      margin-top: 96px;
+      color: var(--muted);
+      font-size: 16px;
       display: flex;
-      align-items: center;
-      gap: 14px;
-      font-size: 8px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 32px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--rule);
-    }
-
-    .section-label-rule {
-      flex: 1;
-      height: 1px;
-      background: var(--rule);
-      display: inline-block;
-    }
-
-    /* ── ABOUT ── */
-    #panel-about { max-width: 640px; }
-
-    .about-lead {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px;
-      line-height: 1.8;
-      font-weight: 300;
-      color: var(--ink);
-      margin-bottom: 36px;
-      text-wrap: pretty;
-    }
-
-    .about-body {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px;
-      line-height: 1.85;
-      font-weight: 300;
-      color: #3A3028;
-      text-wrap: pretty;
-      margin-bottom: 32px;
-    }
-
-    .about-body a {
-      color: var(--terra);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      transition: opacity 0.15s;
-    }
-
-    .about-body a:hover { opacity: 0.7; }
-
-    .about-cv-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--terra);
-      transition: opacity 0.15s;
-    }
-
-    .about-cv-link:hover { opacity: 0.7; }
-
-    /* ── PUBLICATIONS ── */
-    .pub-row {
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      gap: 20px;
-      padding: 28px 0;
-      border-bottom: 1px solid var(--rule);
-      align-items: start;
-    }
-
-    .pub-row:first-of-type { padding-top: 0; }
-
-    .pub-index {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      color: var(--muted);
-      padding-top: 3px;
-    }
-
-    .pub-meta {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 10px;
+      gap: 24px;
       flex-wrap: wrap;
     }
+    footer a { border-bottom-color: transparent; }
+    footer a:hover { color: var(--ink); border-color: var(--ink); }
 
-    .pub-type {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 8px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--terra);
-      background: var(--terra-bg);
-      padding: 3px 9px;
-    }
-
-    .pub-year {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 8px;
-      color: var(--muted);
-    }
-
-    .pub-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 19px;
-      font-weight: 400;
-      line-height: 1.4;
-      color: var(--ink);
-      display: block;
-      margin-bottom: 10px;
-      transition: color 0.15s;
-    }
-
-    .pub-title:hover { color: var(--terra); }
-
-    .pub-desc {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-
-    /* ── BLOG ── */
-    .blog-row {
-      display: grid;
-      grid-template-columns: 88px 1fr;
-      gap: 24px;
-      padding: 28px 0;
-      border-bottom: 1px solid var(--rule);
-      align-items: start;
-    }
-
-    .blog-row:first-of-type { padding-top: 0; }
-
-    .blog-date {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px;
-      color: var(--muted);
-      line-height: 1.6;
-      padding-top: 3px;
-    }
-
-    .blog-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 19px;
-      font-weight: 400;
-      line-height: 1.4;
-      color: var(--ink);
-      display: block;
-      margin-bottom: 10px;
-      transition: color 0.15s;
-    }
-
-    .blog-title:hover { color: var(--terra); }
-
-    .blog-desc {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      line-height: 1.7;
-      color: var(--muted);
-    }
-
-    /* ── CONTACT ── */
-    #panel-contact { max-width: 560px; }
-
-    .contact-row {
-      display: grid;
-      grid-template-columns: 80px 1fr;
-      gap: 24px;
-      padding: 22px 0;
-      border-bottom: 1px solid var(--rule);
-      align-items: baseline;
-    }
-
-    .contact-row:first-of-type { padding-top: 0; }
-
-    .contact-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 8px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .contact-value {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px;
-      font-weight: 300;
-      color: var(--ink);
-      transition: color 0.15s;
-    }
-
-    .contact-value:hover { color: var(--terra); }
-
-    /* ── UNDERLINE HOVER ── */
-    .ul-hover { position: relative; display: inline; }
-    .ul-hover::after {
-      content: '';
-      position: absolute;
-      left: 0; bottom: -1px;
-      width: 0; height: 1px;
-      background: currentColor;
-      transition: width 0.2s ease;
-    }
-    .ul-hover:hover::after { width: 100%; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 760px) {
-      .site-wrapper { flex-direction: column; }
-
-      .sidebar {
-        width: 100%;
-        min-width: 0;
-        position: static;
-        height: auto;
-        padding: 36px 24px 28px;
-        border-right: none;
-        border-bottom: 1px solid var(--ink);
-      }
-
-      .sidebar-photo-wrap {
-        aspect-ratio: 3 / 2;
-        max-height: 240px;
-      }
-
-      .top-strip { padding: 0 24px; }
-      .content-area { padding: 36px 24px 60px; }
+    @media (max-width: 600px) {
+      body { font-size: 18px; }
+      main { padding: 64px 20px 80px; }
+      section { margin-top: 56px; }
     }
   </style>
 </head>
 <body>
-  <div class="site-wrapper">
+  <main>
+    <figure>
+      <img src="me-and-dylan.jpg" alt="Weiming Sheng holding a copy of Bob Dylan&rsquo;s Highway 61 Revisited" width="1400" height="1050" />
+      <figcaption>(me on the right)</figcaption>
+    </figure>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" aria-label="Profile and navigation">
-      <div class="sidebar-name">Weiming<br>Sheng</div>
-      <div class="sidebar-tagline">AI &amp; Philosophy</div>
+    <h1>Weiming Sheng</h1>
 
-      <div class="sidebar-photo-wrap">
-        <img src="0142.JPG" alt="Portrait of Weiming Sheng" />
-        <div class="sidebar-photo-accent"></div>
-      </div>
-
-      <nav class="sidebar-nav" aria-label="Site sections">
-        <a class="nav-item active" data-tab="about" href="#about" onclick="switchTab(event, 'about')">
-          <span class="nav-item-left">
-            <span class="nav-item-num">01</span>
-            About
-          </span>
-          <span class="nav-item-arrow">→</span>
-        </a>
-        <a class="nav-item" data-tab="publications" href="#publications" onclick="switchTab(event, 'publications')">
-          <span class="nav-item-left">
-            <span class="nav-item-num">02</span>
-            Publications
-          </span>
-          <span class="nav-item-arrow">→</span>
-        </a>
-        <a class="nav-item" data-tab="blog" href="#blog" onclick="switchTab(event, 'blog')">
-          <span class="nav-item-left">
-            <span class="nav-item-num">03</span>
-            Blog
-          </span>
-          <span class="nav-item-arrow">→</span>
-        </a>
-        <a class="nav-item" data-tab="contact" href="#contact" onclick="switchTab(event, 'contact')">
-          <span class="nav-item-left">
-            <span class="nav-item-num">04</span>
-            Contact
-          </span>
-          <span class="nav-item-arrow">→</span>
-        </a>
-      </nav>
-
-      <div class="sidebar-contact">
-        <div class="sidebar-contact-label">Contact</div>
-        <a href="mailto:ws2720@columbia.edu">ws2720@columbia.edu</a>
-        <a href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">github / shengweiming</a>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <div class="main">
-      <div class="top-strip">
-        <span class="top-strip-label">Personal Research Site</span>
-        <span class="top-strip-year">2026</span>
-      </div>
-
-      <main class="content-area" id="main-content">
-
-        <!-- About -->
-        <section class="tab-panel active" id="panel-about" aria-label="About">
-          <div class="section-label">
-            <span>01</span>
-            <span class="section-label-rule"></span>
-            <span>About</span>
-          </div>
-          <p class="about-lead">Hi! I'm Wei.<br>I'm a PhD student at Columbia.</p>
-          <p class="about-body">
-            I do philosophy of AI. I am fortunate to be advised by
-            <a href="https://www.columbia.edu/~jrm2182/" target="_blank" rel="noopener noreferrer">John Morrison</a>.
-            This summer I am working on a project on agentic moral alignment with
-            <a href="https://liza-tennant.github.io/" target="_blank" rel="noopener noreferrer">Elizaveta Tennant</a>.
-          </p>
-          <a class="about-cv-link" href="WeimingSheng_CV.pdf" target="_blank" rel="noopener noreferrer">
-            Curriculum Vitae →
-          </a>
-        </section>
-
-        <!-- Publications -->
-        <section class="tab-panel" id="panel-publications" aria-label="Publications">
-          <div class="section-label">
-            <span>02</span>
-            <span class="section-label-rule"></span>
-            <span>Publications</span>
-          </div>
-
-          <div class="pub-row">
-            <span class="pub-index">01</span>
-            <div>
-              <div class="pub-meta">
-                <span class="pub-type">ICML workshop · Poster</span>
-                <span class="pub-year">2026</span>
-              </div>
-              <a class="pub-title" href="papers/FaP-ICML-2026.pdf" target="_blank" rel="noopener noreferrer">
-                <span class="ul-hover">Fictionalism about Personas: Folk Psychology as an Interpretability Strategy</span>
-              </a>
-              <p class="pub-desc">
-                A fictionalist account of LLM mentality.
-              </p>
-            </div>
-          </div>
-
-          <div class="pub-row">
-            <span class="pub-index">02</span>
-            <div>
-              <div class="pub-meta">
-                <span class="pub-type">VLDB workshop</span>
-                <span class="pub-year">2026</span>
-              </div>
-              <a class="pub-title" href="https://arxiv.org/abs/2602.02335" target="_blank" rel="noopener noreferrer">
-                <span class="ul-hover">Building a Correct-by-Design Lakehouse for Humans and Agents</span>
-              </a>
-              <p class="pub-desc">
-                We show how typed table contracts, Git-like data versioning, and transactional pipeline
-                execution can make illegal states unrepresentable and avoid partial effects.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Blog -->
-        <section class="tab-panel" id="panel-blog" aria-label="Blog">
-          <div class="section-label">
-            <span>03</span>
-            <span class="section-label-rule"></span>
-            <span>Blog</span>
-          </div>
-
-          <div class="blog-row">
-            <div class="blog-date">Apr 2026</div>
-            <div>
-              <a class="blog-title" href="blog/sanity-checks-for-das.html">
-                <span class="ul-hover">Sanity Checks for Distributed Alignment Search</span>
-              </a>
-              <p class="blog-desc">
-                DAS is one of the more promising methods in the causal interpretability toolkit.
-                I ran three randomization-based sanity checks on the MoNLI experiment.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Contact -->
-        <section class="tab-panel" id="panel-contact" aria-label="Contact">
-          <div class="section-label">
-            <span>04</span>
-            <span class="section-label-rule"></span>
-            <span>Contact</span>
-          </div>
-
-          <div class="contact-row">
-            <span class="contact-label">Email</span>
-            <a class="contact-value" href="mailto:ws2720@columbia.edu">
-              <span class="ul-hover">ws2720@columbia.edu</span>
-            </a>
-          </div>
-          <div class="contact-row">
-            <span class="contact-label">GitHub</span>
-            <a class="contact-value" href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">
-              <span class="ul-hover">github.com/shengweiming</span>
-            </a>
-          </div>
-        </section>
-
-      </main>
+    <div class="bio">
+      <p>
+        Hi! I&rsquo;m Wei. I&rsquo;m a PhD student at Columbia, where I do philosophy of AI.
+        I am fortunate to be advised by
+        <a href="https://www.columbia.edu/~jrm2182/" target="_blank" rel="noopener noreferrer">John Morrison</a>.
+      </p>
+      <p>
+        This summer I am working on a project on agentic moral alignment with
+        <a href="https://liza-tennant.github.io/" target="_blank" rel="noopener noreferrer">Elizaveta Tennant</a>.
+      </p>
     </div>
-  </div>
 
-  <script>
-    function switchTab(e, id) {
-      e.preventDefault();
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
-      e.currentTarget.classList.add('active');
-      document.getElementById('panel-' + id).classList.add('active');
-    }
-  </script>
+    <section aria-label="Publications">
+      <h2>Publications</h2>
+
+      <div class="item">
+        <a href="papers/FaP-ICML-2026.pdf" target="_blank" rel="noopener noreferrer">Fictionalism about Personas: Folk Psychology as an Interpretability Strategy</a>
+        <div class="meta">ICML Workshop, 2026 &middot; Poster</div>
+        <div class="desc">A fictionalist account of LLM mentality.</div>
+      </div>
+
+      <div class="item">
+        <a href="https://arxiv.org/abs/2602.02335" target="_blank" rel="noopener noreferrer">Building a Correct-by-Design Lakehouse for Humans and Agents</a>
+        <div class="meta">VLDB Workshop, 2026</div>
+        <div class="desc">Typed table contracts, Git-like data versioning, and transactional pipeline execution that make illegal states unrepresentable.</div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="mailto:ws2720@columbia.edu">ws2720@columbia.edu</a>
+      <a href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="WeimingSheng_CV.pdf" target="_blank" rel="noopener noreferrer">CV</a>
+    </footer>
+  </main>
 </body>
 </html>
