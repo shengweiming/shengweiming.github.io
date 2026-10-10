@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weiming Sheng</title>
+  <meta name="description" content="Weiming Sheng — PhD student at Columbia working on philosophy of AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FCFBF8;
+      --ink: #1A1A1A;
+      --muted: #8A8580;
+      --rule: #E7E3DC;
+    }
+
+    html { background: var(--bg); }
+
+    body {
+      font-family: 'EB Garamond', Garamond, Georgia, serif;
+      font-size: 19px;
+      line-height: 1.6;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--rule); transition: border-color .2s; }
+    a:hover { border-color: var(--ink); }
+
+    main {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 120px 24px 120px;
+    }
+
+    .portrait {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: 50% 25%;
+      display: block;
+      margin-bottom: 36px;
+      filter: grayscale(100%);
+    }
+
+    h1 {
+      font-weight: 500;
+      font-size: 19px;
+      letter-spacing: 0.01em;
+      margin-bottom: 28px;
+    }
+
+    .bio p + p { margin-top: 14px; }
+
+    section { margin-top: 72px; }
+
+    h2 {
+      font-weight: 400;
+      font-style: italic;
+      font-size: 19px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .item { margin-bottom: 24px; }
+    .item:last-child { margin-bottom: 0; }
+    .item a { border-bottom-color: transparent; }
+    .item a:hover { border-color: var(--ink); }
+    .meta { color: var(--muted); font-size: 16px; margin-top: 2px; }
+    .desc { font-size: 17px; color: #4A4744; margin-top: 4px; }
+
+    footer {
+      margin-top: 96px;
+      color: var(--muted);
+      font-size: 16px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    footer a { border-bottom-color: transparent; }
+    footer a:hover { color: var(--ink); border-color: var(--ink); }
+
+    @media (max-width: 600px) {
+      body { font-size: 18px; }
+      main { padding: 64px 20px 80px; }
+      section { margin-top: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <img class="portrait" src="../0142.JPG" alt="Portrait of Weiming Sheng" />
+
+    <h1>Weiming Sheng</h1>
+
+    <div class="bio">
+      <p>
+        Hi! I&rsquo;m Wei. I&rsquo;m a PhD student at Columbia, where I do philosophy of AI.
+        I am fortunate to be advised by
+        <a href="https://www.columbia.edu/~jrm2182/" target="_blank" rel="noopener noreferrer">John Morrison</a>.
+      </p>
+      <p>
+        This summer I am working on a project on agentic moral alignment with
+        <a href="https://liza-tennant.github.io/" target="_blank" rel="noopener noreferrer">Elizaveta Tennant</a>.
+      </p>
+    </div>
+
+    <section aria-label="Publications">
+      <h2>Publications</h2>
+
+      <div class="item">
+        <a href="../papers/FaP-ICML-2026.pdf" target="_blank" rel="noopener noreferrer">Fictionalism about Personas: Folk Psychology as an Interpretability Strategy</a>
+        <div class="meta">ICML Workshop, 2026 &middot; Poster</div>
+        <div class="desc">A fictionalist account of LLM mentality.</div>
+      </div>
+
+      <div class="item">
+        <a href="https://arxiv.org/abs/2602.02335" target="_blank" rel="noopener noreferrer">Building a Correct-by-Design Lakehouse for Humans and Agents</a>
+        <div class="meta">VLDB Workshop, 2026</div>
+        <div class="desc">Typed table contracts, Git-like data versioning, and transactional pipeline execution that make illegal states unrepresentable.</div>
+      </div>
+    </section>
+
+    <section aria-label="Writing">
+      <h2>Writing</h2>
+
+      <div class="item">
+        <a href="../blog/sanity-checks-for-das.html">Sanity Checks for Distributed Alignment Search</a>
+        <div class="meta">April 2026</div>
+      </div>
+    </section>
+
+    <footer>
+      <a href="mailto:ws2720@columbia.edu">ws2720@columbia.edu</a>
+      <a href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="../WeimingSheng_CV.pdf" target="_blank" rel="noopener noreferrer">CV</a>
+    </footer>
+  </main>
+</body>
+</html>

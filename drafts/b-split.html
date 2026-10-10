@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weiming Sheng</title>
+  <meta name="description" content="Weiming Sheng — PhD student at Columbia working on philosophy of AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FFFFFF;
+      --ink: #111111;
+      --muted: #8C8C8C;
+      --rule: #EDEDED;
+    }
+
+    html { background: var(--bg); }
+
+    body {
+      font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      font-weight: 400;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      min-height: 100vh;
+    }
+
+    .photo {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: #DADADA;
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 20%;
+      display: block;
+    }
+
+    .text {
+      padding: 14vh 8vw 12vh 7vw;
+      max-width: 640px;
+    }
+
+    h1 {
+      font-weight: 300;
+      font-size: 40px;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .role { color: var(--muted); margin-bottom: 48px; }
+
+    .bio { max-width: 440px; }
+    .bio a { border-bottom: 1px solid #C8C8C8; transition: border-color .2s; }
+    .bio a:hover { border-color: var(--ink); }
+
+    section { margin-top: 64px; }
+
+    h2 {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .row:last-child { border-bottom: none; }
+
+    .year { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .title { font-weight: 500; display: inline; transition: color .2s; }
+    a.title:hover { color: var(--muted); }
+    .venue { color: var(--muted); }
+    .desc { color: #555; margin-top: 4px; }
+
+    .links {
+      margin-top: 72px;
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .links a { color: var(--muted); transition: color .2s; }
+    .links a:hover { color: var(--ink); }
+
+    @media (max-width: 820px) {
+      .layout { grid-template-columns: 1fr; }
+      .photo { position: static; height: 62vh; }
+      .text { padding: 48px 20px 72px; }
+      h1 { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="photo">
+      <img src="../0142.JPG" alt="Portrait of Weiming Sheng" />
+    </div>
+
+    <main class="text">
+      <h1>Weiming Sheng</h1>
+      <p class="role">PhD student, Philosophy &middot; Columbia University</p>
+
+      <div class="bio">
+        <p>
+          Hi! I&rsquo;m Wei. I do philosophy of AI, and I am fortunate to be advised by
+          <a href="https://www.columbia.edu/~jrm2182/" target="_blank" rel="noopener noreferrer">John Morrison</a>.
+          This summer I am working on a project on agentic moral alignment with
+          <a href="https://liza-tennant.github.io/" target="_blank" rel="noopener noreferrer">Elizaveta Tennant</a>.
+        </p>
+      </div>
+
+      <section aria-label="Publications">
+        <h2>Publications</h2>
+        <div class="row">
+          <span class="year">2026</span>
+          <div>
+            <a class="title" href="../papers/FaP-ICML-2026.pdf" target="_blank" rel="noopener noreferrer">Fictionalism about Personas: Folk Psychology as an Interpretability Strategy</a>
+            <div class="venue">ICML Workshop &middot; Poster</div>
+            <div class="desc">A fictionalist account of LLM mentality.</div>
+          </div>
+        </div>
+        <div class="row">
+          <span class="year">2026</span>
+          <div>
+            <a class="title" href="https://arxiv.org/abs/2602.02335" target="_blank" rel="noopener noreferrer">Building a Correct-by-Design Lakehouse for Humans and Agents</a>
+            <div class="venue">VLDB Workshop</div>
+            <div class="desc">Typed table contracts, Git-like data versioning, and transactional pipeline execution that make illegal states unrepresentable.</div>
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="Writing">
+        <h2>Writing</h2>
+        <div class="row">
+          <span class="year">2026</span>
+          <div>
+            <a class="title" href="../blog/sanity-checks-for-das.html">Sanity Checks for Distributed Alignment Search</a>
+            <div class="venue">April</div>
+          </div>
+        </div>
+      </section>
+
+      <nav class="links" aria-label="Contact">
+        <a href="mailto:ws2720@columbia.edu">Email</a>
+        <a href="https://github.com/shengweiming" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="../WeimingSheng_CV.pdf" target="_blank" rel="noopener noreferrer">CV</a>
+      </nav>
+    </main>
+  </div>
+</body>
+</html>
